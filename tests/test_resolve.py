@@ -12,7 +12,8 @@ Rules when something fails:
 """
 import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from retrieval.store import ensure_collections, upsert_rows, resolve, route  # noqa
+from retrieval.store import (ensure_collections, upsert_rows, resolve, route,
+                             remember, recall)  # noqa
 
 VERBOSE = "-v" in sys.argv
 
@@ -182,6 +183,37 @@ def main():
         if VERBOSE or not ok:
             print(f"  {'ok ' if ok else 'FAIL'} {text!r:36} -> {i.name:14} {i.confidence:.3f}")
     print(f"  [route] {len(ROUTE_CASES)-len(rf)}/{len(ROUTE_CASES)}")
+
+    print("\n=== memory ===")
+    mp = "+919812345678"
+    other = "+910000000000"
+    for f in ["asking about B.Tech CSE AI-ML for her son Aryan",
+              "son scored 91 percentile in JEE Main",
+              "wants a campus visit on a weekend",
+              "concerned about the fees, asked about instalments"]:
+        remember(mp, f)
+    remember(other, "OTHERCALLER should never surface")
+
+    mem_checks = [
+        ("kitni fees hai",   "fees"),
+        ("campus dekhna hai", "campus visit"),
+        ("91 percentile",     "percentile"),
+    ]
+    mf = 0
+    for ctx, expect_substr in mem_checks:
+        got = recall(mp, context=ctx, k=1)
+        ok = got and expect_substr in got[0]
+        if not ok:
+            mf += 1
+        if VERBOSE or not ok:
+            print(f"  {'ok ' if ok else 'FAIL'} ctx={ctx!r:24} -> {got}")
+    leak = [f for f in recall(mp, context="other caller", k=10) if "OTHERCALLER" in f]
+    if leak:
+        mf += 1
+        print("  FAIL cross-caller leak:", leak)
+    print(f"  [memory] {len(mem_checks)+1-mf}/{len(mem_checks)+1}")
+    fails += mf
+    total += len(mem_checks) + 1
 
     print(f"\nresolve {total-fails}/{total}   route {len(ROUTE_CASES)-len(rf)}/{len(ROUTE_CASES)}")
     if rf:

@@ -148,11 +148,23 @@ def remember(phone: str, fact: str, kind: str = "note") -> None:
     )])
 
 
-def recall(phone: str, k: int = 3) -> list[str]:
-    """Short natural-language facts. C feeds these straight to an LLM."""
+def recall(phone: str, context: str | None = None, k: int = 3) -> list[str]:
+    """Short natural-language facts for this caller. C feeds these to an LLM.
+
+    Pass `context` (what the caller just said) to rank by relevance instead of
+    returning an arbitrary slice. Without it this is a key-value lookup and the
+    vector DB earns nothing; with it, a caller asking about fees gets their fee
+    history surfaced, not their visit preference.
+
+    The phone filter runs DURING search, so relevance ranking never leaks facts
+    across callers.
+    """
     hits = client.query_points(
-        "memory", query=embed(phone),
-        query_filter=Filter(must=[FieldCondition(key="phone", match=MatchValue(value=phone))]),
+        "memory",
+        query=embed(context if context else phone),
+        query_filter=Filter(must=[
+            FieldCondition(key="phone", match=MatchValue(value=phone))
+        ]),
         limit=k,
     ).points
     return [h.payload["fact"] for h in hits]
