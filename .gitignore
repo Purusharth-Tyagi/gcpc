@@ -1,0 +1,8 @@
+.env
+*.wav
+*.mp3
+logs/
+*.db
+*.sqlite3
+__pycache__/
+.venv/
