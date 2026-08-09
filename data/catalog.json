@@ -1,0 +1,480 @@
+{
+  "courses": [
+    {
+      "id": "c01",
+      "canonical": "B.Tech in Computer Science and Engineering",
+      "aliases": ["BTech CSE", "computer science engineering", "CS course", "CSE wala course", "कंप्यूटर साइंस इंजीनियरिंग"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "CSE",
+      "duration_years": 4,
+      "fees_per_year": 275000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c02",
+      "canonical": "B.Tech in CSE (Artificial Intelligence & Machine Learning)",
+      "aliases": ["BTech CSE AIML", "AI ML course", "AI wala course", "artificial intelligence branch", "CSE AI", "एआई एमएल"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "CSE-AIML",
+      "duration_years": 4,
+      "fees_per_year": 275000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c03",
+      "canonical": "B.Tech in Information Technology",
+      "aliases": ["BTech IT", "IT branch", "information technology course", "आईटी"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "IT",
+      "duration_years": 4,
+      "fees_per_year": 247500,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c04",
+      "canonical": "B.Tech in CSE (Data Science)",
+      "aliases": ["BTech CSE DS", "data science course", "DS wala branch", "data science engineering"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "CSE-DS",
+      "duration_years": 4,
+      "fees_per_year": 247500,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c05",
+      "canonical": "B.Tech in Electronics and Communication Engineering",
+      "aliases": ["BTech ECE", "electronics branch", "ECE course", "इलेक्ट्रॉनिक्स"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "ECE",
+      "duration_years": 4,
+      "fees_per_year": 220000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c06",
+      "canonical": "B.Tech in Aerospace Engineering",
+      "aliases": ["BTech aerospace", "aerospace branch", "aero course", "एयरोस्पेस इंजीनियरिंग"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "Aerospace",
+      "duration_years": 4,
+      "fees_per_year": 200000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c07",
+      "canonical": "B.Tech in Mechanical Engineering",
+      "aliases": ["BTech mech", "mechanical branch", "mech course", "मैकेनिकल"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "Mechanical",
+      "duration_years": 4,
+      "fees_per_year": 130000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c08",
+      "canonical": "B.Tech in Electrical and Electronics Engineering",
+      "aliases": ["BTech EEE", "electrical electronics branch", "EEE course"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "EEE",
+      "duration_years": 4,
+      "fees_per_year": 130000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c09",
+      "canonical": "B.Tech in Electrical Engineering",
+      "aliases": ["BTech electrical", "electrical branch", "electrical course"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "Electrical",
+      "duration_years": 4,
+      "fees_per_year": 130000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c10",
+      "canonical": "B.Tech in Civil Engineering",
+      "aliases": ["BTech civil", "civil branch", "civil engineering course", "सिविल इंजीनियरिंग"],
+      "phoneme": null,
+      "degree": "B.Tech",
+      "branch": "Civil",
+      "duration_years": 4,
+      "fees_per_year": 130000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c11",
+      "canonical": "Master of Computer Applications",
+      "aliases": ["MCA", "MCA course", "computer applications masters", "एमसीए"],
+      "phoneme": null,
+      "degree": "MCA",
+      "branch": "MCA",
+      "duration_years": 2,
+      "fees_per_year": 175000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c12",
+      "canonical": "MBA in Finance",
+      "aliases": ["MBA finance", "finance MBA", "एमबीए फाइनेंस"],
+      "phoneme": null,
+      "degree": "MBA",
+      "branch": "MBA-Finance",
+      "duration_years": 2,
+      "fees_per_year": 250000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c13",
+      "canonical": "MBA (General)",
+      "aliases": ["general MBA", "MBA course", "एमबीए"],
+      "phoneme": null,
+      "degree": "MBA",
+      "branch": "MBA-General",
+      "duration_years": 2,
+      "fees_per_year": 250000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c14",
+      "canonical": "MBA in Digital Marketing",
+      "aliases": ["MBA digital marketing", "digital marketing MBA"],
+      "phoneme": null,
+      "degree": "MBA",
+      "branch": "MBA-DigitalMarketing",
+      "duration_years": 2,
+      "fees_per_year": 250000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c15",
+      "canonical": "B.Pharm",
+      "aliases": ["bachelor of pharmacy", "pharma course", "बी फार्मा"],
+      "phoneme": null,
+      "degree": "B.Pharm",
+      "branch": "Pharmacy",
+      "duration_years": 4,
+      "fees_per_year": 155000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c16",
+      "canonical": "D.Pharm",
+      "aliases": ["diploma pharmacy", "D pharma", "डी फार्मा"],
+      "phoneme": null,
+      "degree": "D.Pharm",
+      "branch": "Pharmacy-Diploma",
+      "duration_years": 2,
+      "fees_per_year": 60000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c17",
+      "canonical": "M.Pharm",
+      "aliases": ["master of pharmacy", "M pharma"],
+      "phoneme": null,
+      "degree": "M.Pharm",
+      "branch": "Pharmacy-Masters",
+      "duration_years": 2,
+      "fees_per_year": 225000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c18",
+      "canonical": "M.Sc. in Environmental Science",
+      "aliases": ["MSc environmental science", "environment science course"],
+      "phoneme": null,
+      "degree": "M.Sc.",
+      "branch": "MSc-EnvSci",
+      "duration_years": 2,
+      "fees_per_year": 75000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c19",
+      "canonical": "M.Sc. in Geoinformatics",
+      "aliases": ["MSc geoinformatics", "geoinformatics course"],
+      "phoneme": null,
+      "degree": "M.Sc.",
+      "branch": "MSc-Geo",
+      "duration_years": 2,
+      "fees_per_year": 75000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    },
+    {
+      "id": "c20",
+      "canonical": "Ph.D.",
+      "aliases": ["PhD", "doctoral programme", "पीएचडी"],
+      "phoneme": null,
+      "degree": "Ph.D.",
+      "branch": "PhD-General",
+      "duration_years": 3,
+      "fees_per_year": 100000,
+      "seats": null,
+      "intake_open": true,
+      "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
+    }
+  ],
+
+  "exams": [
+    {
+      "id": "jee_main",
+      "canonical": "JEE Main",
+      "aliases": ["JEE mains", "mains", "joint entrance", "जेईई मेन"],
+      "phoneme": null,
+      "score_type": "percentile",
+      "score_min": 0,
+      "score_max": 100
+    },
+    {
+      "id": "cat",
+      "canonical": "CAT",
+      "aliases": ["common admission test", "CAT score"],
+      "phoneme": null,
+      "score_type": "percentile",
+      "score_min": 0,
+      "score_max": 100
+    },
+    {
+      "id": "xat",
+      "canonical": "XAT",
+      "aliases": ["xavier aptitude test"],
+      "phoneme": null,
+      "score_type": "percentile",
+      "score_min": 0,
+      "score_max": 100
+    },
+    {
+      "id": "gmat",
+      "canonical": "GMAT",
+      "aliases": ["G-MAT", "graduate management admission test"],
+      "phoneme": null,
+      "score_type": "raw_score",
+      "score_min": 200,
+      "score_max": 800
+    },
+    {
+      "id": "cmat",
+      "canonical": "CMAT",
+      "aliases": ["common management admission test"],
+      "phoneme": null,
+      "score_type": "percentile",
+      "score_min": 0,
+      "score_max": 100
+    },
+    {
+      "id": "mat",
+      "canonical": "MAT",
+      "aliases": ["management aptitude test"],
+      "phoneme": null,
+      "score_type": "percentile",
+      "score_min": 0,
+      "score_max": 100
+    },
+    {
+      "id": "university_test",
+      "canonical": "JSS University Entrance Test",
+      "aliases": ["university entrance test", "college test", "JSSUN test"],
+      "phoneme": null,
+      "score_type": "raw_score",
+      "score_min": 0,
+      "score_max": 100
+    }
+  ],
+
+  "faculty": [
+    {
+      "id": "f01",
+      "canonical": "Dr. Dhiraj Pandey",
+      "aliases": ["Pandey sir", "IT HOD", "CS HOD"],
+      "phoneme": null,
+      "role": "Associate Professor & In-Charge HOD, Information Technology",
+      "handles": ["IT"]
+    },
+    {
+      "id": "f02",
+      "canonical": "Dr. Kakoli Banerjee",
+      "aliases": ["Banerjee maam", "CSE HOD"],
+      "phoneme": null,
+      "role": "Associate Professor & In-Charge HOD, Computer Science and Engineering",
+      "handles": ["CSE", "CSE-AIML", "CSE-DS"]
+    },
+    {
+      "id": "f03",
+      "canonical": "Prof. (Dr.) Amarjeet Singh",
+      "aliases": ["Amarjeet sir", "CSE professor"],
+      "phoneme": null,
+      "role": "Professor, Computer Science and Engineering",
+      "handles": ["CSE"]
+    },
+    {
+      "id": "f04",
+      "canonical": "Dr. Harikesh Singh",
+      "aliases": ["Harikesh sir"],
+      "phoneme": null,
+      "role": "Associate Professor, Computer Science and Engineering",
+      "handles": ["CSE"]
+    },
+    {
+      "id": "f05",
+      "canonical": "Dr. Gayathri Sakya",
+      "aliases": ["Sakya maam", "ECE HOD"],
+      "phoneme": null,
+      "role": "HOD, Electronics and Communication Engineering",
+      "handles": ["ECE"]
+    },
+    {
+      "id": "f06",
+      "canonical": "Dr. Sanjeev Kumar Sharma",
+      "aliases": ["Sharma sir", "electrical HOD"],
+      "phoneme": null,
+      "role": "Professor & Head, Electrical Engineering",
+      "handles": ["Electrical", "EEE"]
+    },
+    {
+      "id": "f07",
+      "canonical": "Dr. Parveen P Terang",
+      "aliases": ["Terang maam"],
+      "phoneme": null,
+      "role": "Associate Professor, Electrical Engineering",
+      "handles": ["Electrical", "EEE"]
+    },
+    {
+      "id": "f08",
+      "canonical": "Dr. Gunjan Varshney",
+      "aliases": ["Varshney maam"],
+      "phoneme": null,
+      "role": "Associate Professor, Electrical Engineering",
+      "handles": ["Electrical", "EEE"]
+    },
+    {
+      "id": "f09",
+      "canonical": "Dr. Yogendra Singh",
+      "aliases": ["Yogendra sir", "MBA HOD"],
+      "phoneme": null,
+      "role": "Professor & HOD, MBA",
+      "handles": ["MBA-Finance", "MBA-General", "MBA-DigitalMarketing"]
+    },
+    {
+      "id": "f10",
+      "canonical": "Mr. Rakesh Bhatt",
+      "aliases": ["Bhatt sir"],
+      "phoneme": null,
+      "role": "Assistant Professor, MBA",
+      "handles": ["MBA-Finance", "MBA-General", "MBA-DigitalMarketing"]
+    },
+    {
+      "id": "f11",
+      "canonical": "Mrs. Shobha G",
+      "aliases": ["Shobha maam", "MCA HOD"],
+      "phoneme": null,
+      "role": "Assistant Professor & In-Charge HOD, MCA",
+      "handles": ["MCA"]
+    },
+    {
+      "id": "f12",
+      "canonical": "Ms. Shivani Pathak",
+      "aliases": ["Pathak maam"],
+      "phoneme": null,
+      "role": "Assistant Professor, MCA",
+      "handles": ["MCA"]
+    }
+  ],
+
+  "campus": [
+    {
+      "id": "cp01",
+      "canonical": "JSS University Noida, Sector 62 Campus",
+      "aliases": ["main campus", "sector 62 campus", "JSS Noida"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["10:00", "12:00", "15:00"]
+    },
+    {
+      "id": "cp02",
+      "canonical": "Boys Hostel",
+      "aliases": ["boys hostel", "BH", "new boys hostel"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["11:00", "15:00"]
+    },
+    {
+      "id": "cp03",
+      "canonical": "Girls Hostel",
+      "aliases": ["girls hostel", "GH"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["11:00", "15:00"]
+    },
+    {
+      "id": "cp04",
+      "canonical": "Amenity Centre",
+      "aliases": ["amenity center", "health centre", "PHC"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["10:00", "14:00"]
+    },
+    {
+      "id": "cp05",
+      "canonical": "Computer and IT Labs Block",
+      "aliases": ["computer labs", "IT labs", "CS labs"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["10:00", "12:00", "15:00"]
+    },
+    {
+      "id": "cp06",
+      "canonical": "Central Library",
+      "aliases": ["library", "central library block"],
+      "phoneme": null,
+      "nearest_metro": "Noida Sector 62",
+      "visit_slots": ["10:00", "12:00", "15:00"]
+    }
+  ]
+}
