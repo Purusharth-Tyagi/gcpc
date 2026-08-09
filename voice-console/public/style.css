@@ -1,0 +1,134 @@
+/* Functional dark mode only. No polish until all three panels are verified. */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 12px;
+  background: #12141a;
+  color: #e6e6e6;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9aa4b2;
+}
+
+.panel {
+  border: 1px solid #2a2f3a;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+/* ---------- 1. A/B toggle ---------- */
+
+.toggle-panel { text-align: center; }
+
+#toggle-btn {
+  width: 100%;
+  max-width: 720px;
+  padding: 22px;
+  font: inherit;
+  font-size: 30px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  cursor: pointer;
+  color: #04120a;
+  background: #22c55e;
+  border: 3px solid #22c55e;
+}
+
+body.lexicon-off #toggle-btn {
+  color: #1a0505;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+#toggle-caption {
+  margin-top: 8px;
+  font-size: 15px;
+  color: #22c55e;
+}
+
+body.lexicon-off #toggle-caption { color: #ef4444; }
+
+.conn { margin-top: 6px; font-size: 12px; color: #8b93a1; }
+.conn.up { color: #6b7280; }
+.conn.down { color: #f59e0b; }
+
+/* ---------- 2. latency ---------- */
+
+.p50-box { margin-bottom: 10px; }
+.p50-label { font-size: 12px; color: #9aa4b2; }
+#p50-value { font-size: 44px; font-weight: bold; line-height: 1.1; }
+.sub { font-size: 12px; color: #6b7280; }
+
+#latency-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+#latency-table th,
+#latency-table td {
+  padding: 4px 6px;
+  text-align: right;
+  border-bottom: 1px solid #232833;
+}
+
+#latency-table th {
+  color: #9aa4b2;
+  font-weight: normal;
+  text-align: right;
+}
+
+#latency-table td.total { font-weight: bold; }
+#latency-table td.zero { color: #ef4444; }
+#latency-table tr.row-off td { color: #b98a8a; }
+
+/* ---------- 3. resolution ---------- */
+
+.scroll-list {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.res-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 4px;
+  border-bottom: 1px solid #232833;
+}
+
+.res-row .mark { font-size: 18px; width: 18px; flex: none; }
+.res-row.ok .mark { color: #22c55e; }
+.res-row.fail .mark { color: #ef4444; }
+
+.res-row .heard {
+  text-decoration: line-through;
+  color: #8b93a1;
+  flex: none;
+}
+
+.res-row .arrow { color: #6b7280; flex: none; }
+
+.res-row .resolved { flex: 1; color: #e6e6e6; }
+.res-row.fail .resolved { color: #ef4444; }
+
+.res-row .score {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.res-row.ok .score { color: #22c55e; }
+.res-row.fail .score { color: #ef4444; }
+
+/* two columns when there's room */
+@media (min-width: 900px) {
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+}

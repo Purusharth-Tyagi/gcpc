@@ -22,3 +22,4 @@ class Resolution:
 class Intent:
     name: str
     confidence: float
+

@@ -30,3 +30,4 @@ for coll, fields in PAYLOAD_INDEXES.items():
 
 missing = verify_indexes()
 print("\n" + ("all indexes present" if not missing else "STILL MISSING: " + ", ".join(missing)))
+

@@ -6,3 +6,17 @@ logs/
 *.sqlite3
 __pycache__/
 .venv/
+ui/node_modules/
+ui/dist/
+ui/.env.local
+# lane-b
+.env
+*.wav
+*.mp3
+logs/
+*.db
+*.sqlite3
+__pycache__/
+.venv/
+ui/node_modules/
+ui/dist/

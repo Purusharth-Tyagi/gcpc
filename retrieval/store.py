@@ -66,6 +66,8 @@ def ensure_collections(wipe: bool = False) -> None:
                 vectors_config=VectorParams(size=size, distance=Distance.COSINE),
             )
         for field, schema in PAYLOAD_INDEXES.get(name, []):
+            if _is_local():
+                continue        # no-op in memory mode, and it warns loudly
             try:
                 client.create_payload_index(
                     collection_name=name, field_name=field, field_schema=schema,
@@ -80,6 +82,11 @@ def ensure_collections(wipe: bool = False) -> None:
                 # cause. Loud now beats confusing at 3am.
                 print(f"  !! could not index {name}.{field}: "
                       f"{type(e).__name__}: {str(e)[:120]}")
+
+
+def _is_local() -> bool:
+    url = os.getenv("QDRANT_URL")
+    return not url or url == ":memory:"
 
 
 def is_local_mode() -> bool:
@@ -248,3 +255,4 @@ def recall(phone: str, context: str | None = None, k: int = 3) -> list[str]:
         limit=k,
     ).points
     return [h.payload["fact"] for h in hits]
+
