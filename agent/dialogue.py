@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agent.enquiry import Enquiry
 from agent.eligibility import eligibility
+from agent.llm import extract_query
 
 
 class State(Enum):
@@ -42,12 +43,13 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
     if enquiry.course is None:
         if user_said.strip() == "":
             return "Which course are you interested in?", State.ENQUIRE
-        canonical, res = resolve_course(user_said)
+        clean_query = extract_query(user_said, "course")
+        canonical, res = resolve_course(clean_query)
         if canonical is None:
             enquiry.resolve_fail_count += 1
             if enquiry.resolve_fail_count >= 3:
                 return "Let me connect you to a counsellor for this.", State.ESCALATE
-            return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIREE
+            return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIRE
         enquiry.course = canonical
         enquiry.course_payload = res.payload
         return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
@@ -56,7 +58,8 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
     if enquiry.exam is None:
         if user_said.strip() == "":
             return "Which entrance exam did you take?", State.ENQUIRE
-        canonical, res = resolve_exam(user_said)
+        clean_query = extract_query(user_said, "exam")
+        canonical, res = resolve_exam(clean_query)
         if canonical is None:
             enquiry.resolve_fail_count += 1
             if enquiry.resolve_fail_count >= 3:
@@ -67,14 +70,13 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
 
     # Slot 3: score
     if enquiry.score is None:
-        try:
-            enquiry.score = float(user_said.strip())
-        except ValueError:
+        match = re.search(r"\d+\.?\d*", user_said)
+        if match is None:
             return "Could you tell me your score as a number?", State.ENQUIRE
+        enquiry.score = float(match.group())
         return "Thanks, let me check that for you.", State.ELIGIBILITY
 
-    # All slots filled — shouldn't normally reach here
-    return "", State.ELIGIBILITY 
+    return "", State.ELIGIBILITY
 
 def handle_eligibility(enquiry: Enquiry) -> tuple[str, State]:
     """Run the eligibility guardrail. Never guess."""
@@ -130,9 +132,10 @@ def handle_collect(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
 def check_scope_fence(user_said: str) -> bool:
     """Scholarship, reservation category, fee waivers — always escalate."""
     said = user_said.lower()
+    words_in_text = set(said.replace(",", " ").replace(".", " ").split())
     fence_words = {"scholarship", "reservation", "quota", "waiver",
                    "category", "concession", "sc", "st", "obc", "ews"}
-    return any(w in said for w in fence_words)
+    return len(words_in_text & fence_words) > 0
 
 
 def check_wants_human(user_said: str) -> bool:
@@ -141,12 +144,6 @@ def check_wants_human(user_said: str) -> bool:
     human_words = {"human", "person", "counsellor", "representative", "talk to someone"}
     return any(w in said for w in human_words)
 
-def check_scope_fence(user_said: str) -> bool:
-    """Scholarship, reservation category, fee waivers — always escalate."""
-    said = user_said.lower()
-    fence_words = {"scholarship", "reservation", "quota", "waiver",
-                   "category", "concession", "sc", "st", "obc", "ews"}
-    return any(w in said for w in fence_words)
 
 
 def check_wants_human(user_said: str) -> bool:
@@ -220,7 +217,7 @@ def handle_confirm(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
 
     # Not a yes — treat as a correction attempt
     return "REPAIR_NEEDED", State.CONFIRM
-
+import re
 import random
 
 def handle_book(enquiry: Enquiry) -> tuple[str, State]:
@@ -287,10 +284,14 @@ if __name__ == "__main__":
     e = Enquiry()
     state = State.GREET
 
-    caller_turns = ["", "Ramesh", "Aryan", "", "scholarship kya milegi"]
+    caller_turns = ["", "Ramesh", "Aryan", "",
+                     "cse mein interest hai",
+                     "JEE main diya tha",
+                     "91 percentile mila tha",
+                     "", "yes", "Saturday 11 AM", "", "haan", ""]
 
     for said in caller_turns:
         msg, state = handle_turn(e, state, said)
         print(f"[{state.value}] Agent: {msg}")
-        if state in (State.DONE, State.ESCALATE):
+        if state == State.DONE:
             break
