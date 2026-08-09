@@ -33,6 +33,8 @@ from retrieval.store import (resolve, route, recall, remember, client,   # noqa:
                             resolve_best)
 from agent.enquiry import Enquiry
 from agent.dialogue import handle_turn, State
+from agent.rime_speak import synthesize
+import base64
                             
 
 CATALOG = os.getenv("CATALOG", "data/catalog.json")
@@ -273,13 +275,19 @@ def api_turn(inp: TurnIn):
     if enquiry.course_payload:
         pass  # resolutions for phoneme injection can be added here later
 
+    spoken_text = _inject(reply, used, inp.lexicon_on)
+
+    audio_bytes = synthesize(spoken_text)
+    audio_b64 = base64.b64encode(audio_bytes).decode("utf-8") if audio_bytes else None
+
     return {
         "heard": inp.text,
         "state": new_state.value,
         "reply_text": reply,
         "speak_lexicon_on": _inject(reply, used, True),
         "speak_lexicon_off": _inject(reply, used, False),
-        "speak": _inject(reply, used, inp.lexicon_on),
+        "speak": spoken_text,
+        "audio_base64": audio_b64,
         "latency_ms": {
             "total": round((time.perf_counter() - t0) * 1000, 2),
         },
