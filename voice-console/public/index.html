@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Voice Assistant - Demo Console</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 1. A/B TOGGLE -->
+  <section id="toggle-panel" class="panel toggle-panel">
+    <button id="toggle-btn" type="button" role="switch" aria-checked="true">
+      <span id="toggle-label">LEXICON: ON</span>
+    </button>
+    <div id="toggle-caption">vector resolution active</div>
+    <div id="conn-status" class="conn">connecting…</div>
+  </section>
+
+  <main>
+    <!-- 2. LATENCY -->
+    <section class="panel">
+      <h2>Latency</h2>
+      <div class="p50-box">
+        <div class="p50-label">running p50 total</div>
+        <div id="p50-value">— ms</div>
+        <div id="turn-count" class="sub">0 turns</div>
+      </div>
+      <table id="latency-table">
+        <thead>
+          <tr>
+            <th>#</th><th>ASR</th><th>route</th><th>resolve</th><th>LLM</th><th>TTS</th><th>total</th>
+          </tr>
+        </thead>
+        <tbody id="latency-body"></tbody>
+      </table>
+    </section>
+
+    <!-- 3. RESOLUTION -->
+    <section class="panel">
+      <h2>Resolution</h2>
+      <div id="resolution-list" class="scroll-list"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

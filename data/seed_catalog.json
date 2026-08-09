@@ -1,0 +1,588 @@
+{
+ "courses": [
+  {
+   "id": "c01",
+   "canonical": "B.Tech Computer Science and Engineering (AI & ML)",
+   "aliases": [
+    "BTech CSE AIML",
+    "CSE AI ML",
+    "computer science AI",
+    "AI wala course",
+    "artificial intelligence branch",
+    "CS with AI specialisation",
+    "कंप्यूटर साइंस एआई",
+    "CSE AIML department"
+   ],
+   "phoneme": "{b1i tEk}",
+   "degree": "B.Tech",
+   "branch": "CSE-AIML",
+   "duration_years": 4,
+   "fees_per_year": 185000,
+   "seats": 120,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 88.0,
+    "cuet": 92.0,
+    "university_test": 65.0
+   },
+   "phoneme_for": "B.Tech"
+  },
+  {
+   "id": "c02",
+   "canonical": "B.Tech Computer Science and Engineering",
+   "aliases": [
+    "BTech CSE",
+    "computer science",
+    "CS branch",
+    "seeyesee",
+    "plain CSE",
+    "कंप्यूटर साइंस",
+    "CS department",
+    "computer science department"
+   ],
+   "phoneme": "{b1i tEk}",
+   "degree": "B.Tech",
+   "branch": "CSE",
+   "duration_years": 4,
+   "fees_per_year": 165000,
+   "seats": 180,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 82.0,
+    "cuet": 86.0,
+    "university_test": 60.0
+   },
+   "phoneme_for": "B.Tech"
+  },
+  {
+   "id": "c03",
+   "canonical": "B.Tech Information Technology",
+   "aliases": [
+    "BTech IT",
+    "information technology",
+    "IT branch",
+    "आईटी",
+    "IT department"
+   ],
+   "phoneme": null,
+   "degree": "B.Tech",
+   "branch": "IT",
+   "duration_years": 4,
+   "fees_per_year": 155000,
+   "seats": 120,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 74.0,
+    "cuet": 80.0,
+    "university_test": 55.0
+   }
+  },
+  {
+   "id": "c04",
+   "canonical": "B.Tech Mechanical Engineering",
+   "aliases": [
+    "BTech mechanical",
+    "mechanical",
+    "mech branch",
+    "mechanical wala",
+    "मैकेनिकल",
+    "mechanical department",
+    "mech ka department"
+   ],
+   "phoneme": null,
+   "degree": "B.Tech",
+   "branch": "MECH",
+   "duration_years": 4,
+   "fees_per_year": 135000,
+   "seats": 90,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 58.0,
+    "cuet": 65.0,
+    "university_test": 45.0
+   }
+  },
+  {
+   "id": "c05",
+   "canonical": "B.Tech Electronics and Communication Engineering",
+   "aliases": [
+    "BTech ECE",
+    "electronics",
+    "ECE branch",
+    "electronics and communication",
+    "इलेक्ट्रॉनिक्स",
+    "ECE department",
+    "electronics department"
+   ],
+   "phoneme": null,
+   "degree": "B.Tech",
+   "branch": "ECE",
+   "duration_years": 4,
+   "fees_per_year": 145000,
+   "seats": 120,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 66.0,
+    "cuet": 72.0,
+    "university_test": 50.0
+   }
+  },
+  {
+   "id": "c06",
+   "canonical": "B.Tech Civil Engineering",
+   "aliases": [
+    "BTech civil",
+    "civil",
+    "civil branch",
+    "सिविल",
+    "civil department",
+    "civil ka department"
+   ],
+   "phoneme": null,
+   "degree": "B.Tech",
+   "branch": "CIVIL",
+   "duration_years": 4,
+   "fees_per_year": 125000,
+   "seats": 60,
+   "intake_open": false,
+   "cutoffs": {
+    "jee_main": 52.0,
+    "cuet": 60.0,
+    "university_test": 42.0
+   }
+  },
+  {
+   "id": "c07",
+   "canonical": "Bachelor of Computer Applications",
+   "aliases": [
+    "BCA",
+    "bee see aay",
+    "computer applications",
+    "बीसीए",
+    "BCA karna hai",
+    "bca course",
+    "bca admission"
+   ],
+   "phoneme": "{b1i s1i 1ey}",
+   "degree": "BCA",
+   "branch": "BCA",
+   "duration_years": 3,
+   "fees_per_year": 95000,
+   "seats": 120,
+   "intake_open": true,
+   "cutoffs": {
+    "cuet": 58.0,
+    "university_test": 40.0
+   },
+   "phoneme_for": "Bachelor of Computer Applications"
+  },
+  {
+   "id": "c08",
+   "canonical": "Master of Business Administration",
+   "aliases": [
+    "MBA",
+    "em bee aay",
+    "business administration",
+    "एमबीए"
+   ],
+   "phoneme": "{1Em b1i 1ey}",
+   "degree": "MBA",
+   "branch": "MBA",
+   "duration_years": 2,
+   "fees_per_year": 275000,
+   "seats": 60,
+   "intake_open": true,
+   "cutoffs": {
+    "cat": 72.0,
+    "university_test": 55.0
+   },
+   "phoneme_for": "Master of Business Administration"
+  },
+  {
+   "id": "c09",
+   "canonical": "B.Tech Computer Science and Engineering (Data Science)",
+   "aliases": [
+    "data science branch",
+    "BTech data science",
+    "DS branch",
+    "data science wala course",
+    "CSE data science",
+    "डेटा साइंस",
+    "data science department"
+   ],
+   "phoneme": "{b1i tEk}",
+   "phoneme_for": "B.Tech",
+   "degree": "B.Tech",
+   "branch": "CSE-DS",
+   "duration_years": 4,
+   "fees_per_year": 175000,
+   "seats": 60,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 85.0,
+    "cuet": 89.0,
+    "university_test": 62.0
+   }
+  }
+ ],
+ "exams": [
+  {
+   "id": "jee_main",
+   "canonical": "JEE Main",
+   "aliases": [
+    "mains",
+    "jee mains",
+    "joint entrance main",
+    "जेईई मेन"
+   ],
+   "phoneme": "{J1i 1i 1i m1eyn}",
+   "score_type": "percentile",
+   "score_min": 0,
+   "score_max": 100
+  },
+  {
+   "id": "cuet",
+   "canonical": "CUET UG",
+   "aliases": [
+    "cuet",
+    "see you ee tee",
+    "common university entrance test",
+    "सीयूईटी"
+   ],
+   "phoneme": "{s1i y1u 1i t1i}",
+   "score_type": "percentile",
+   "score_min": 0,
+   "score_max": 100
+  },
+  {
+   "id": "cat",
+   "canonical": "CAT",
+   "aliases": [
+    "cat exam",
+    "see aay tee",
+    "common admission test"
+   ],
+   "phoneme": "{s1i 1ey t1i}",
+   "score_type": "percentile",
+   "score_min": 0,
+   "score_max": 100
+  },
+  {
+   "id": "university_test",
+   "canonical": "University Entrance Test",
+   "aliases": [
+    "college ka test",
+    "university test",
+    "own entrance",
+    "internal test"
+   ],
+   "phoneme": null,
+   "score_type": "marks",
+   "score_min": 0,
+   "score_max": 100
+  },
+  {
+   "id": "jee_adv",
+   "canonical": "JEE Advanced",
+   "aliases": [
+    "advanced",
+    "jee advance",
+    "advance ka exam",
+    "iit ka exam"
+   ],
+   "phoneme": "{J1i 1i 1i 2advA1nst}",
+   "score_type": "rank",
+   "score_min": 1,
+   "score_max": 250000
+  },
+  {
+   "id": "mid_sem",
+   "canonical": "Mid Semester Examination",
+   "aliases": [
+    "mid sems",
+    "mid sems kab hai",
+    "midsem",
+    "mid term",
+    "internal exam"
+   ],
+   "phoneme": null,
+   "score_type": "marks",
+   "score_min": 0,
+   "score_max": 100
+  }
+ ],
+ "faculty": [
+  {
+   "id": "f01",
+   "canonical": "Dr. Shubhangi Chaturvedi",
+   "aliases": [
+    "chaturvedi maam",
+    "shubhangi mam",
+    "CS HOD",
+    "computer science HOD"
+   ],
+   "phoneme": "{SU2bh1angi Ca2tUrv1edi}",
+   "role": "HOD, Computer Science",
+   "handles": [
+    "CSE-AIML",
+    "CSE"
+   ],
+   "phoneme_for": "Shubhangi Chaturvedi"
+  },
+  {
+   "id": "f02",
+   "canonical": "Prof. Rajagopalan Iyer",
+   "aliases": [
+    "rajagopalan sir",
+    "iyer sir",
+    "mechanical HOD"
+   ],
+   "phoneme": "{r1aJ0ag1op0al2an 1ay0Er}",
+   "role": "HOD, Mechanical",
+   "handles": [
+    "MECH"
+   ],
+   "phoneme_for": "Rajagopalan Iyer"
+  },
+  {
+   "id": "f03",
+   "canonical": "Dr. Ananya Bhattacharya",
+   "aliases": [
+    "bhattacharya maam",
+    "ananya mam",
+    "admissions counsellor"
+   ],
+   "phoneme": "{an1any0a b h a2 t 0 t A1 C A2 r y A0}",
+   "role": "Admissions Counsellor",
+   "handles": [
+    "ALL"
+   ],
+   "phoneme_for": "Ananya Bhattacharya"
+  },
+  {
+   "id": "f04",
+   "canonical": "Prof. Arindam Mukherjee",
+   "aliases": [
+    "mukherjee sir",
+    "mukherjee sir ka DBMS",
+    "DBMS wale sir",
+    "database faculty"
+   ],
+   "phoneme": "{mUk1OrJ0i}",
+   "phoneme_for": "Mukherjee",
+   "role": "Professor, Databases",
+   "handles": [
+    "CSE",
+    "CSE-AIML",
+    "CSE-DS"
+   ]
+  },
+  {
+   "id": "f05",
+   "canonical": "Dr. Neha Sharma",
+   "aliases": [
+    "sharma maam",
+    "sharma sir OS class",
+    "operating systems faculty",
+    "OS wali maam"
+   ],
+   "phoneme": null,
+   "role": "Professor, Operating Systems",
+   "handles": [
+    "CSE",
+    "IT"
+   ]
+  }
+ ],
+ "campus": [
+  {
+   "id": "cp01",
+   "canonical": "Ghaziabad Campus, Block C",
+   "aliases": [
+    "block C",
+    "main building",
+    "ghaziabad campus"
+   ],
+   "phoneme": "{g1az0iyab1ad}",
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "10:00",
+    "12:00",
+    "15:00"
+   ],
+   "phoneme_for": "Ghaziabad"
+  },
+  {
+   "id": "cp02",
+   "canonical": "Indirapuram Annexe",
+   "aliases": [
+    "indirapuram",
+    "annexe",
+    "second campus"
+   ],
+   "phoneme": "{1ind0ir1apUr0am}",
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "11:00",
+    "14:00"
+   ],
+   "phoneme_for": "Indirapuram"
+  },
+  {
+   "id": "cp03",
+   "canonical": "Physics Laboratory, Block B",
+   "aliases": [
+    "phy lab",
+    "physics lab",
+    "phy lab wali building",
+    "lab building"
+   ],
+   "phoneme": null,
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "11:00",
+    "14:00"
+   ]
+  },
+  {
+   "id": "cp04",
+   "canonical": "Training and Placement Cell",
+   "aliases": [
+    "placement cell",
+    "placement wala cell",
+    "TnP",
+    "placement office",
+    "training and placement"
+   ],
+   "phoneme": null,
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "10:00",
+    "15:00"
+   ]
+  }
+ ],
+ "intents": [
+  {
+   "id": "i01",
+   "label": "eligibility",
+   "canonical": "can my son get CSE",
+   "aliases": [
+    "am I eligible",
+    "91 percentile mein admission ho jayega",
+    "cutoff cross kiya kya",
+    "admission mil jayega",
+    "do I qualify",
+    "kya mera number aayega",
+    "is course mein admission mil jayega",
+    "iske liye kitna chahiye",
+    "mera score enough hai kya",
+    "branch mil jayegi kya",
+    "my son got 91 percentile in JEE Main can he get CSE",
+    "bete ko 85 percentile aaya hai kya admission ho jayega",
+    "mechanical branch mein 60 percentile se ho jayega",
+    "he scored 72 in CUET is that enough for IT",
+    "beti ka rank aaya hai kya usko seat milegi",
+    "with this score can we get computer science"
+   ]
+  },
+  {
+   "id": "i02",
+   "label": "fees",
+   "canonical": "what is the fees",
+   "aliases": [
+    "kitni fees hai",
+    "total cost",
+    "fees per year",
+    "kitna paisa lagega",
+    "how much does it cost",
+    "fee structure",
+    "course ki fees kitni hai",
+    "is course ka kitna kharcha",
+    "btech ki fees",
+    "iski fees kya hai",
+    "annual fees kitni hogi",
+    "AI wala course ki fees kitni hai",
+    "computer science ki total fees kya hogi",
+    "how much are the fees for BTech mechanical"
+   ]
+  },
+  {
+   "id": "i03",
+   "label": "book_visit",
+   "canonical": "book a campus visit",
+   "aliases": [
+    "campus dekhna hai",
+    "can we visit",
+    "campus tour",
+    "college aana hai",
+    "visit karna hai",
+    "campus ghumna hai",
+    "campus visit book karna hai",
+    "college dekhne aana hai"
+   ]
+  },
+  {
+   "id": "i04",
+   "label": "book_callback",
+   "canonical": "book a callback with a counsellor",
+   "aliases": [
+    "counsellor se baat karani hai",
+    "call me back",
+    "koi call kare",
+    "arrange a call",
+    "callback chahiye",
+    "baad mein call karo",
+    "counsellor call kare",
+    "schedule a call"
+   ]
+  },
+  {
+   "id": "i05",
+   "label": "status",
+   "canonical": "application status",
+   "aliases": [
+    "form ka status",
+    "where is my application",
+    "status check karna hai",
+    "application kahan pahunchi"
+   ]
+  },
+  {
+   "id": "i06",
+   "label": "course_info",
+   "canonical": "tell me about the course",
+   "aliases": [
+    "what subjects are there",
+    "duration kitna hai",
+    "course ke bare mein batao",
+    "syllabus kya hai",
+    "how many years",
+    "kitne saal ka course hai",
+    "duration kitna hai",
+    "how many years",
+    "kya kya padhaya jayega",
+    "course details",
+    "is course ke bare mein batao",
+    "course ke details",
+    "iske bare mein bataiye",
+    "civil engineering ke bare mein batao",
+    "tell me about the computer science course",
+    "BCA kitne saal ka hota hai"
+   ]
+  },
+  {
+   "id": "i07",
+   "label": "human",
+   "canonical": "transfer me to a person now",
+   "aliases": [
+    "kisi se baat karao abhi",
+    "connect me to a person",
+    "operator",
+    "real person se baat",
+    "transfer kar do",
+    "live agent"
+   ]
+  }
+ ]
+}

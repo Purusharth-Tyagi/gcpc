@@ -1,0 +1,14 @@
+{
+  "name": "voice-console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lane D demo console: A/B lexicon toggle, latency panel, resolution panel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  }
+}
