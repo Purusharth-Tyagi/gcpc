@@ -21,7 +21,17 @@ class State(Enum):
 
 
 def handle_greet(enquiry: Enquiry) -> tuple[str, State]:
-    """First turn — greet the caller."""
+    """First turn — greet the caller. Check memory if phone is known."""
+    from retrieval.mocks import recall
+
+    if enquiry.phone:
+        past = recall(enquiry.phone, k=1)
+        if past:
+            record = past[0]
+            applicant = record.get("applicant_name", "the applicant")
+            course = record.get("course", "your enquiry")
+            return (f"Welcome back! Calling about {course} for {applicant} again?"), State.IDENTIFY
+
     prompt = "Namaste, this is the admissions helpline. How can I help you today?"
     return prompt, State.IDENTIFY
 
