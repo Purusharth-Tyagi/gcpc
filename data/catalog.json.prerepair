@@ -19,8 +19,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -44,8 +43,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -67,8 +65,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -90,8 +87,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -113,8 +109,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -136,8 +131,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -159,8 +153,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -181,8 +174,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -203,8 +195,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -226,8 +217,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "B.Tech"
   },
@@ -240,7 +230,7 @@
     "computer applications masters",
     "एमसीए"
    ],
-   "phoneme": "{1Em s1i 1ey}",
+   "phoneme": null,
    "degree": "MCA",
    "branch": "MCA",
    "duration_years": 2,
@@ -249,10 +239,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "Master of Computer Applications"
+    "university_test": null
+   }
   },
   {
    "id": "c12",
@@ -271,8 +259,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "MBA"
   },
@@ -293,8 +280,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "MBA"
   },
@@ -314,8 +300,7 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
+    "university_test": null
    },
    "phoneme_for": "MBA"
   },
@@ -327,7 +312,7 @@
     "pharma course",
     "बी फार्मा"
    ],
-   "phoneme": "{b1i farm}",
+   "phoneme": null,
    "degree": "B.Pharm",
    "branch": "Pharmacy",
    "duration_years": 4,
@@ -336,10 +321,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "B.Pharm"
+    "university_test": null
+   }
   },
   {
    "id": "c16",
@@ -349,7 +332,7 @@
     "D pharma",
     "डी फार्मा"
    ],
-   "phoneme": "{d1i farm}",
+   "phoneme": null,
    "degree": "D.Pharm",
    "branch": "Pharmacy-Diploma",
    "duration_years": 2,
@@ -358,10 +341,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "D.Pharm"
+    "university_test": null
+   }
   },
   {
    "id": "c17",
@@ -370,7 +351,7 @@
     "master of pharmacy",
     "M pharma"
    ],
-   "phoneme": "{1Em farm}",
+   "phoneme": null,
    "degree": "M.Pharm",
    "branch": "Pharmacy-Masters",
    "duration_years": 2,
@@ -379,10 +360,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "M.Pharm"
+    "university_test": null
+   }
   },
   {
    "id": "c18",
@@ -391,7 +370,7 @@
     "MSc environmental science",
     "environment science course"
    ],
-   "phoneme": "{1Em 1Es s1i}",
+   "phoneme": null,
    "degree": "M.Sc.",
    "branch": "MSc-EnvSci",
    "duration_years": 2,
@@ -400,10 +379,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "Environmental Science"
+    "university_test": null
+   }
   },
   {
    "id": "c19",
@@ -412,7 +389,7 @@
     "MSc geoinformatics",
     "geoinformatics course"
    ],
-   "phoneme": "{J1i0o0inf0Orm1at0iks}",
+   "phoneme": null,
    "degree": "M.Sc.",
    "branch": "MSc-Geo",
    "duration_years": 2,
@@ -421,10 +398,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "Geoinformatics"
+    "university_test": null
+   }
   },
   {
    "id": "c20",
@@ -434,7 +409,7 @@
     "doctoral programme",
     "पीएचडी"
    ],
-   "phoneme": "{p1i 1eyC d1i}",
+   "phoneme": null,
    "degree": "Ph.D.",
    "branch": "PhD-General",
    "duration_years": 3,
@@ -443,10 +418,8 @@
    "intake_open": true,
    "cutoffs": {
     "jee_main": null,
-    "university_test": null,
-    "cuet": null
-   },
-   "phoneme_for": "Ph.D."
+    "university_test": null
+   }
   }
  ],
  "exams": [
@@ -472,11 +445,10 @@
     "common admission test",
     "CAT score"
    ],
-   "phoneme": "{s1i 1ey t1i}",
+   "phoneme": null,
    "score_type": "percentile",
    "score_min": 0,
-   "score_max": 100,
-   "phoneme_for": "CAT"
+   "score_max": 100
   },
   {
    "id": "xat",
@@ -484,11 +456,10 @@
    "aliases": [
     "xavier aptitude test"
    ],
-   "phoneme": "{1Eks 1ey t1i}",
+   "phoneme": null,
    "score_type": "percentile",
    "score_min": 0,
-   "score_max": 100,
-   "phoneme_for": "XAT"
+   "score_max": 100
   },
   {
    "id": "gmat",
@@ -497,11 +468,10 @@
     "G-MAT",
     "graduate management admission test"
    ],
-   "phoneme": "{J1i 1Em 1ey t1i}",
+   "phoneme": null,
    "score_type": "raw_score",
    "score_min": 200,
-   "score_max": 800,
-   "phoneme_for": "GMAT"
+   "score_max": 800
   },
   {
    "id": "cmat",
@@ -509,11 +479,10 @@
    "aliases": [
     "common management admission test"
    ],
-   "phoneme": "{s1i 1Em 1ey t1i}",
+   "phoneme": null,
    "score_type": "percentile",
    "score_min": 0,
-   "score_max": 100,
-   "phoneme_for": "CMAT"
+   "score_max": 100
   },
   {
    "id": "mat",
@@ -521,11 +490,10 @@
    "aliases": [
     "management aptitude test"
    ],
-   "phoneme": "{1Em 1ey t1i}",
+   "phoneme": null,
    "score_type": "percentile",
    "score_min": 0,
-   "score_max": 100,
-   "phoneme_for": "MAT"
+   "score_max": 100
   },
   {
    "id": "university_test",
@@ -539,21 +507,6 @@
    "score_type": "raw_score",
    "score_min": 0,
    "score_max": 100
-  },
-  {
-   "id": "cuet",
-   "canonical": "CUET UG",
-   "aliases": [
-    "cuet",
-    "see you ee tee",
-    "common university entrance test",
-    "सीयूईटी"
-   ],
-   "score_type": "percentile",
-   "score_min": 0,
-   "score_max": 100,
-   "phoneme": "{s1i y1u 1i t1i}",
-   "phoneme_for": "CUET"
   }
  ],
  "faculty": [
