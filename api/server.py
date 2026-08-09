@@ -35,6 +35,8 @@ from agent.enquiry import Enquiry
 from agent.dialogue import handle_turn, State
 from agent.rime_speak import synthesize
 import base64
+from fastapi import UploadFile, File
+from agent.deepgram_listen import transcribe_bytes
                             
 
 CATALOG = os.getenv("CATALOG", "data/catalog.json")
@@ -293,7 +295,40 @@ def api_turn(inp: TurnIn):
         },
     }
 
+@app.post("/voice-turn")
+async def api_voice_turn(phone: str = "+919812345678", lexicon_on: bool = True, audio: UploadFile = File(...)):
+    """Same as /turn, but takes an audio file instead of text."""
+    ensure_loaded()
+    t0 = time.perf_counter()
 
+    audio_bytes = await audio.read()
+    heard_text = transcribe_bytes(audio_bytes)
+
+    if phone not in _SESSIONS:
+        _SESSIONS[phone] = (Enquiry(phone=phone), State.GREET)
+
+    enquiry, state = _SESSIONS[phone]
+    reply, new_state = handle_turn(enquiry, state, heard_text)
+    _SESSIONS[phone] = (enquiry, new_state)
+
+    if new_state == State.DONE:
+        del _SESSIONS[phone]
+
+    used = []
+    spoken_text = _inject(reply, used, lexicon_on)
+    audio_out_bytes = synthesize(spoken_text)
+    audio_b64 = base64.b64encode(audio_out_bytes).decode("utf-8") if audio_out_bytes else None
+
+    return {
+        "heard": heard_text,
+        "state": new_state.value,
+        "reply_text": reply,
+        "speak": spoken_text,
+        "audio_base64": audio_b64,
+        "latency_ms": {
+            "total": round((time.perf_counter() - t0) * 1000, 2),
+        },
+    }
 # Keep this LAST in the file. A mount at "/" swallows any route declared after it.
 if os.path.isdir(UI_DIR):
     app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")
