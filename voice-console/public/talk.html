@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Desk — Talk</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --line:#30363d; --txt:#e6edf3;
+          --dim:#8b949e; --ok:#3fb950; --warn:#d29922; --bad:#f85149; --accent:#58a6ff; }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--txt);
+         font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; padding:24px }
+  .wrap { max-width:860px; margin:0 auto }
+  h1 { font-size:18px; margin:0 0 4px; letter-spacing:.08em }
+  .sub { color:var(--dim); margin-bottom:20px }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px }
+  button { background:var(--panel); color:var(--txt); border:1px solid var(--line);
+           padding:12px 18px; border-radius:8px; cursor:pointer; font:inherit }
+  button:hover { border-color:var(--accent) }
+  #mic { font-size:16px; padding:16px 28px; min-width:190px }
+  #mic.live { background:var(--bad); border-color:var(--bad); color:#fff }
+  input[type=text] { flex:1; min-width:260px; background:var(--panel); color:var(--txt);
+                     border:1px solid var(--line); padding:12px; border-radius:8px; font:inherit }
+  label { color:var(--dim); display:flex; align-items:center; gap:6px; cursor:pointer }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+           padding:16px; margin-bottom:14px }
+  .lbl { color:var(--dim); font-size:11px; letter-spacing:.12em; margin-bottom:8px }
+  .heard { color:var(--accent) }
+  .said { font-size:15px; margin-top:6px }
+  .accept { color:var(--ok) } .confirm { color:var(--warn) } .reject { color:var(--bad) }
+  .strike { text-decoration:line-through; color:var(--dim) }
+  .lat { color:var(--dim); font-size:12px }
+  .err { color:var(--bad) }
+  .chip { display:inline-block; border:1px solid var(--line); border-radius:14px;
+          padding:3px 10px; margin:3px 4px 0 0; font-size:12px; color:var(--dim) }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>COLLEGE VOICE DESK</h1>
+  <div class="sub">speak or type — Hinglish is fine</div>
+
+  <div class="row">
+    <button id="mic">HOLD TO TALK</button>
+    <input type="text" id="typed" placeholder="or type: my son got 91 percentile in JEE Main, can he get CSE AI ML">
+    <button id="send">send</button>
+  </div>
+  <div class="row">
+    <label><input type="checkbox" id="lex" checked> pronunciation lexicon</label>
+    <label><input type="checkbox" id="tts" checked> speak replies (Rime)</label>
+    <span id="status" class="lat"></span>
+  </div>
+
+  <div class="panel">
+    <div class="lbl">CONVERSATION</div>
+    <div><span class="lbl">heard</span> <span id="heard" class="heard">—</span></div>
+    <div class="said" id="said">—</div>
+  </div>
+
+  <div class="panel">
+    <div class="lbl">WHAT QDRANT RESOLVED</div>
+    <div id="res">—</div>
+  </div>
+
+  <div class="panel">
+    <div class="lbl">LATENCY</div>
+    <div id="lat" class="lat">—</div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let lastAudio = null;
+
+function setStatus(t, bad) { $("status").textContent = t; $("status").className = bad ? "err" : "lat"; }
+
+// ---------------------------------------------------------------- speaking
+async function speak(text) {
+  if (lastAudio) { lastAudio.pause(); lastAudio = null; }   // barge-in
+  const r = await fetch("/speak", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ text })
+  });
+  if (!r.ok) { setStatus("TTS failed: " + r.status, true); return null; }
+  const ms = r.headers.get("X-TTS-Ms");
+  const blob = await r.blob();
+  lastAudio = new Audio(URL.createObjectURL(blob));
+  lastAudio.play().catch(() => setStatus("click the page once to allow audio", true));
+  return ms;
+}
+
+// ------------------------------------------------------------------- turn
+async function send(text) {
+  if (!text || !text.trim()) return;
+  setStatus("thinking…");
+  const lexiconOn = $("lex").checked;
+  const t0 = performance.now();
+
+  let d;
+  try {
+    const r = await fetch("/turn", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ text, lexicon_on: lexiconOn })
+    });
+    d = await r.json();
+  } catch (e) { setStatus("server unreachable: " + e.message, true); return; }
+
+  $("heard").textContent = d.resolution ? d.resolution.heard : text;
+
+  // IMPORTANT: the string with {brace} tokens is what Rime needs. Sending the
+  // plain one makes both A/B sides sound identical.
+  const spoken = lexiconOn ? d.speak_lexicon_on : d.speak_lexicon_off;
+  $("said").textContent = d.speak || spoken || "—";
+
+  const r = d.resolution || {};
+  $("res").innerHTML = r.resolved
+    ? `<span class="strike">${r.heard}</span> &rarr;
+       <span class="${r.band||'accept'}">${r.resolved}</span>
+       <span class="lat">${(r.similarity||0).toFixed(3)} ${r.band||''}</span>` +
+      (r.band === "confirm" && r.alternates && r.alternates.length
+        ? `<div style="margin-top:6px"><span class="lbl">did you mean</span>` +
+          r.alternates.map(a => `<span class="chip">${a}</span>`).join("") + `</div>`
+        : "")
+    : `<span class="reject">nothing resolved — the agent will ask rather than guess</span>`;
+
+  let ttsMs = null;
+  if ($("tts").checked && spoken) ttsMs = await speak(spoken);
+
+  const s = d.stages || {};
+  $("lat").textContent =
+    `route ${s.route_ms ?? "-"}ms · resolve ${s.resolve_ms ?? "-"}ms` +
+    (ttsMs ? ` · TTS ${ttsMs}ms` : "") +
+    ` · end-to-end ${Math.round(performance.now() - t0)}ms`;
+  setStatus("");
+}
+
+$("send").onclick = () => { send($("typed").value); };
+$("typed").addEventListener("keydown", e => { if (e.key === "Enter") send($("typed").value); });
+
+// --------------------------------------------------------------------- mic
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) {
+  $("mic").disabled = true;
+  $("mic").textContent = "MIC NEEDS CHROME";
+  setStatus("Web Speech API unavailable — type instead", true);
+} else {
+  const rec = new SR();
+  rec.lang = "en-IN";            // handles Hinglish far better than en-US
+  rec.interimResults = true;
+  rec.continuous = false;
+  let live = false;
+
+  rec.onresult = e => {
+    let fin = "", part = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) fin += t; else part += t;
+    }
+    if (part) $("heard").textContent = part + " …";
+    if (fin) { $("typed").value = fin.trim(); send(fin.trim()); }
+  };
+  rec.onerror = e => setStatus("mic: " + e.error, true);
+  rec.onend = () => { live = false; $("mic").classList.remove("live"); $("mic").textContent = "HOLD TO TALK"; };
+
+  $("mic").onclick = () => {
+    if (live) { rec.stop(); return; }
+    if (lastAudio) { lastAudio.pause(); lastAudio = null; }   // barge-in
+    live = true;
+    $("mic").classList.add("live");
+    $("mic").textContent = "LISTENING… (click to stop)";
+    setStatus("");
+    try { rec.start(); } catch (e) { setStatus(String(e), true); }
+  };
+}
+</script>
+</body>
+</html>

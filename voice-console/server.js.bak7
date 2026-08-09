@@ -241,32 +241,6 @@ app.post("/turn", async (req, res) => {
 });
 
 
-
-// Proxy TTS to the Python service so the browser stays same-origin.
-// Returns raw wav bytes plus the measured TTS latency header.
-app.post("/speak", async (req, res) => {
-  try {
-    const r = await fetch(`${LANE_B}/speak`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body || {})
-    });
-    if (!r.ok) {
-      const t = await r.text();
-      return res.status(r.status).type("application/json").send(t);
-    }
-    const ms = r.headers.get("x-tts-ms");
-    if (ms) res.set("X-TTS-Ms", ms);
-    res.set("Access-Control-Expose-Headers", "X-TTS-Ms");
-    res.type("audio/wav");
-    const buf = Buffer.from(await r.arrayBuffer());
-    res.send(buf);
-  } catch (e) {
-    res.status(502).json({ error: "Lane B unreachable: " + e.message });
-  }
-});
-
-
 server.listen(PORT, () => {
   console.log(`demo console  -> http://localhost:${PORT}`);
   console.log(`turn log      -> ${LOG_FILE}`);

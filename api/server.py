@@ -214,25 +214,49 @@ def _parse_score(text):
 
 
 def _eligibility(course, exam, score):
-    """C's four-condition guardrail. Do not soften it."""
-    if not course or course.band != "accept":
-        return "unknown", None
-    if not exam or exam.band != "accept":
-        return "unknown", None
+    """The four-condition guardrail, plus WHY it failed.
+
+    Returns (verdict, cutoff, ask) where `ask` is a question for the caller
+    when the problem is missing information rather than a real dead end.
+
+    The guardrail is unchanged — we still never state an outcome unless all
+    four conditions hold. What changes is the response when they do not.
+    "I can't answer, call a counsellor" is correct for a genuine dead end and
+    infuriating for "you didn't tell me the course yet". A slot-filling agent
+    asks for the missing slot; only an exhausted one escalates.
+    """
+    if not course or course.band == "reject":
+        return "need_info", None, "Which course is he interested in?"
+    if course.band == "confirm":
+        alts = " or ".join(([course.canonical] + course.alternates)[:2])
+        return "need_info", None, f"Did you mean {alts}?"
+
+    if not exam or exam.band == "reject":
+        return "need_info", None, "Which entrance exam was that — JEE Main, JEE Advanced, or CUET?"
+    if exam.band == "confirm":
+        alts = " or ".join(([exam.canonical] + exam.alternates)[:2])
+        return "need_info", None, f"Was that {alts}?"
+
     if score is None:
-        return "unknown", None
+        return "need_info", None, f"What was his {exam.canonical} score?"
+
     lo = exam.payload.get("score_min", 0)
     hi = exam.payload.get("score_max", 100)
     if not (lo <= score <= hi):
-        return "unknown", None
+        return "need_info", None, (f"A {exam.canonical} score should be between "
+                                   f"{lo} and {hi}. Could you repeat it?")
+
     cutoff = (course.payload.get("cutoffs") or {}).get(exam.code)
     if cutoff is None:
-        return "unknown", None
+        # A real dead end: both entities resolved, score valid, but we hold no
+        # cutoff for that pairing. Do not guess. Escalate.
+        return "unknown", None, None
+
     if score >= cutoff + 3:
-        return "likely", cutoff
+        return "likely", cutoff, None
     if score >= cutoff:
-        return "borderline", cutoff
-    return "below", cutoff
+        return "borderline", cutoff, None
+    return "below", cutoff, None
 
 
 def _inject(text, resolutions, on=True):
@@ -265,7 +289,7 @@ def api_turn(inp: TurnIn):
     best_kind, best_res = best if best else (None, None)
 
     score = _parse_score(inp.text)
-    verdict, cutoff = _eligibility(course, exam, score)
+    verdict, cutoff, ask = _eligibility(course, exam, score)
     facts = recall(inp.phone, context=inp.text, k=2)
 
     # ORDER MATTERS: availability before the eligibility guardrail, or a closed
@@ -273,6 +297,8 @@ def api_turn(inp: TurnIn):
     if course and course.band == "accept" and not course.payload.get("intake_open", True):
         reply = (f"{course.canonical} intake is closed this year. "
                  f"Shall I tell you about another branch?")
+    elif verdict == "need_info":
+        reply = ask                     # ask for the missing slot, do not give up
     elif verdict == "unknown":
         reply = ("I don't want to give you a wrong answer on that. "
                  "Let me have a counsellor confirm it. Shall I book a callback?")
@@ -289,7 +315,7 @@ def api_turn(inp: TurnIn):
         "resolutions": {"course": _res_json(course), "exam": _res_json(exam),
                         "best": _res_json(best_res), "best_kind": best_kind},
         "score": score,
-        "eligibility": {"verdict": verdict, "cutoff": cutoff},
+        "eligibility": {"verdict": verdict, "cutoff": cutoff, "ask": ask},
         "memory": facts,
         "reply_text": reply,
         # both versions every turn, so the A/B toggle needs no second request
