@@ -1,0 +1,19 @@
+[
+  { "heard": "AI wala CS course",        "resolved": "B.Tech in CSE (AI & ML)",                          "kind": "course" },
+  { "heard": "data science branch",      "resolved": "B.Tech in CSE (Data Science)",                    "kind": "course" },
+  { "heard": "bee tech mechanical",      "resolved": "B.Tech in Mechanical Engineering",                "kind": "course" },
+  { "heard": "civil ka department",      "resolved": "Department of Civil Engineering",                 "kind": "course" },
+  { "heard": "em bee ay finance",        "resolved": "MBA (Finance Specialization)",                    "kind": "course" },
+  { "heard": "Sharma sir OS class",      "resolved": "Prof. Rajeev Sharma - Operating Systems",         "kind": "faculty" },
+  { "heard": "doctor Iyer maam",         "resolved": "Dr. Lakshmi Iyer - Dean, Academics",              "kind": "faculty" },
+  { "heard": "Mukherjee sir ka DBMS",    "resolved": "Prof. Arnab Mukherjee - Database Systems",        "kind": "faculty" },
+  { "heard": "Nair sir HOD wale",        "resolved": "Dr. Suresh Nair - HOD, Electronics",              "kind": "faculty" },
+  { "heard": "T block canteen",          "resolved": "Tagore Block Cafeteria",                          "kind": "location" },
+  { "heard": "admin bhavan",             "resolved": "Administrative Building (Admin Bhavan)",          "kind": "location" },
+  { "heard": "central lib",              "resolved": "Dr. Ambedkar Central Library",                    "kind": "location" },
+  { "heard": "phy lab wali building",    "resolved": "Applied Physics Laboratory, Block C",             "kind": "location" },
+  { "heard": "placement wala cell",      "resolved": "Training & Placement Cell",                       "kind": "location" },
+  { "heard": "mid sems kab hai",         "resolved": "Mid-Semester Examinations",                       "kind": "exam" },
+  { "heard": "gate ki coaching",         "resolved": "GATE Preparation Cell",                           "kind": "exam" },
+  { "heard": "jee mains counselling",    "resolved": "JEE (Main) Counselling - JoSAA",                  "kind": "exam" }
+]
