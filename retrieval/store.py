@@ -3,6 +3,7 @@ import os, sys, zlib
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue,
+    PayloadSchemaType,
 )
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -39,6 +40,21 @@ def point_id(code: str) -> int:
     return zlib.crc32(code.encode("utf-8"))
 
 
+# Any payload field you FILTER on needs an index on a real Qdrant server, or
+# the query fails with 400 "Index required but not found". In-memory mode does
+# not enforce this, so a missing index passes tests and breaks at integration.
+# Add a line here the moment anyone filters on a new field.
+PAYLOAD_INDEXES = {
+    "memory":  [("phone", PayloadSchemaType.KEYWORD)],
+    "courses": [("intake_open", PayloadSchemaType.BOOL),
+                ("branch", PayloadSchemaType.KEYWORD),
+                ("degree", PayloadSchemaType.KEYWORD)],
+    "exams":   [("score_type", PayloadSchemaType.KEYWORD)],
+    "faculty": [("role", PayloadSchemaType.KEYWORD)],
+    "campus":  [("nearest_metro", PayloadSchemaType.KEYWORD)],
+}
+
+
 def ensure_collections(wipe: bool = False) -> None:
     size = vector_size()
     for name in COLLECTIONS:
@@ -49,6 +65,48 @@ def ensure_collections(wipe: bool = False) -> None:
                 collection_name=name,
                 vectors_config=VectorParams(size=size, distance=Distance.COSINE),
             )
+        for field, schema in PAYLOAD_INDEXES.get(name, []):
+            try:
+                client.create_payload_index(
+                    collection_name=name, field_name=field, field_schema=schema,
+                    wait=True,
+                )
+            except Exception as e:
+                msg = str(e).lower()
+                if "already exists" in msg or "not supported" in msg:
+                    continue
+                # Do NOT swallow this. A missing index does not fail here — it
+                # fails later as a 400 inside resolve()/recall(), far from the
+                # cause. Loud now beats confusing at 3am.
+                print(f"  !! could not index {name}.{field}: "
+                      f"{type(e).__name__}: {str(e)[:120]}")
+
+
+def is_local_mode() -> bool:
+    url = os.getenv("QDRANT_URL")
+    return not url or url == ":memory:"
+
+
+def verify_indexes() -> list[str]:
+    """Missing payload indexes. Empty list means all good.
+
+    In-memory mode does not track payload_schema and does not enforce indexes,
+    so the check is skipped there — otherwise it reports false positives while
+    every query happily succeeds.
+    """
+    if is_local_mode():
+        return []
+    missing = []
+    for name, fields in PAYLOAD_INDEXES.items():
+        if not client.collection_exists(name):
+            missing.append(f"{name} (collection missing)")
+            continue
+        info = client.get_collection(name)
+        present = set((info.payload_schema or {}).keys())
+        for field, _ in fields:
+            if field not in present:
+                missing.append(f"{name}.{field}")
+    return missing
 
 
 def surface_forms(row: dict) -> list[str]:
@@ -88,7 +146,28 @@ def _band(top: float, second: float) -> str:
 
 
 def resolve(text: str, kind: str, filters: dict | None = None) -> Resolution | None:
-    """kind in {course, exam, faculty, campus}. Returns None on no hit at all."""
+    """kind in {course, exam, faculty, campus}. Returns None on no hit at all.
+
+    WHEN TO PASS filters, and when NOT TO:
+
+      DO filter when it narrows WHICH ENTITIES ARE CANDIDATES.
+          resolve(text, "faculty", {"role": "Admissions Counsellor"})
+          The caller does not care that other faculty exist.
+
+      DO NOT filter on a property the caller should be TOLD about.
+          resolve(text, "course", {"intake_open": True})   # <-- wrong
+      Civil is closed, so the filter removes it and the resolver confidently
+      returns Mechanical. The caller asked about Civil and hears about
+      something else. Instead resolve unfiltered, then read the property:
+
+          r = resolve(text, "course")
+          if not r.payload["intake_open"]:
+              say("Civil intake is closed this year. Shall I tell you
+                   about Mechanical instead?")
+
+      Rule of thumb: filtering hides; a business rule explains. On a
+      high-trust line, explain.
+    """
     qfilter = None
     if filters:
         qfilter = Filter(must=[
@@ -120,6 +199,7 @@ def resolve(text: str, kind: str, filters: dict | None = None) -> Resolution | N
         code=top.payload["code"],
         canonical=top.payload["canonical"],
         phoneme=top.payload.get("phoneme"),
+        phoneme_for=top.payload.get("phoneme_for") or top.payload["canonical"],
         score=round(top.score, 4),
         band=_band(top.score, second),
         payload=top.payload,

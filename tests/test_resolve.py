@@ -184,6 +184,50 @@ def main():
             print(f"  {'ok ' if ok else 'FAIL'} {text!r:36} -> {i.name:14} {i.confidence:.3f}")
     print(f"  [route] {len(ROUTE_CASES)-len(rf)}/{len(ROUTE_CASES)}")
 
+    print("\n=== payload filters (400s on real server if index missing) ===")
+    ff = 0
+    # Candidate-narrowing filters: correct use of query_filter.
+    filter_checks = [
+        ("computer science",  "course",  {"intake_open": True},  "c02"),
+        ("civil engineering", "course",  {"intake_open": False}, "c06"),
+        ("counsellor",        "faculty", {"role": "Admissions Counsellor"}, "f03"),
+    ]
+    for text, kind, filt, want in filter_checks:
+        try:
+            r = resolve(text, kind, filters=filt)
+            got = r.code if (r and r.band != "reject") else None
+            ok = got == want
+        except Exception as e:
+            ok, got = False, f"{type(e).__name__}: {str(e)[:60]}"
+        if not ok:
+            ff += 1
+        if VERBOSE or not ok:
+            print(f"  {'ok ' if ok else 'FAIL'} {text!r:24} {filt} -> {got}")
+    print(f"  [filters] {len(filter_checks)-ff}/{len(filter_checks)}")
+    fails += ff
+    total += len(filter_checks)
+
+    # Availability is a BUSINESS RULE, not a filter. Filtering out a closed
+    # course makes the resolver return a different course with confidence.
+    # Resolve unfiltered, then read the flag, so C can say "that one is closed".
+    print("\n=== availability is not a filter ===")
+    af = 0
+    r = resolve("civil engineering", "course")            # no filter
+    ok = r and r.code == "c06" and r.payload["intake_open"] is False
+    if not ok:
+        af += 1
+    if VERBOSE or not ok:
+        print(f"  {'ok ' if ok else 'FAIL'} unfiltered civil -> "
+              f"{r.code if r else None} intake_open={r.payload.get('intake_open') if r else '-'}")
+    r_bad = resolve("civil engineering", "course", filters={"intake_open": True})
+    leaked = r_bad and r_bad.band == "accept" and r_bad.code != "c06"
+    if leaked:
+        print(f"  note: filtering closed courses substitutes {r_bad.canonical!r} "
+              f"with band={r_bad.band} — this is why we do not filter on it")
+    print(f"  [availability] {1-af}/1")
+    fails += af
+    total += 1
+
     print("\n=== memory ===")
     mp = "+919812345678"
     other = "+910000000000"
