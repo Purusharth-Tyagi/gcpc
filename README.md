@@ -1,2 +1,2 @@
-# gcpc
-yug gandu
+
+puru lund mota wala
