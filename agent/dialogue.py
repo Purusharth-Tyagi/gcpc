@@ -139,6 +139,29 @@ def handle_collect(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         return "", State.CONFIRM
     return "", State.CONFIRM
 
+_HINDI_WORDS = {
+    "hai", "hain", "tha", "thi", "the", "aur", "kya", "kaise", "kaun",
+    "kab", "kahan", "mera", "meri", "mere", "apka", "aapka", "humara",
+    "nahi", "haan", "ji", "toh", "mein", "ka", "ki", "ke", "se", "ko",
+    "wala", "wali", "diya", "liya", "gaya", "raha", "rahi", "rahe",
+    "bhi", "yeh", "woh", "iska", "uska", "abhi", "phir", "sakte",
+}
+
+
+def detect_language(user_said: str) -> str:
+    """Heuristic: count Devanagari chars + common Hindi function words.
+    Runs in microseconds, good enough for a demo."""
+    devanagari_count = sum(1 for ch in user_said if "\u0900" <= ch <= "\u097F")
+    if devanagari_count > 0:
+        return "hi"
+
+    words = set(user_said.lower().split())
+    hindi_word_count = len(words & _HINDI_WORDS)
+
+    if hindi_word_count >= 2:
+        return "hi"
+    return "en"    
+
 def check_scope_fence(user_said: str) -> bool:
     """Scholarship, reservation category, fee waivers — always escalate."""
     said = user_said.lower()
@@ -238,6 +261,11 @@ def handle_book(enquiry: Enquiry) -> tuple[str, State]:
 
 def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple[str, State]:
     """Single entry point — routes to the right handler based on current state."""
+    # Set language from caller's early turns
+    if user_said.strip() and enquiry.language == "en":
+        detected = detect_language(user_said)
+        if detected == "hi":
+            enquiry.language = "hi"
     # Global escalation checks — run before any state-specific logic
     if current_state not in (State.GREET, State.DONE, State.ESCALATE):
         if check_scope_fence(user_said):
@@ -291,7 +319,7 @@ def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple
     return "Sorry, something went wrong.", State.ESCALATE
 
 if __name__ == "__main__":
-    e = Enquiry()
+    e = Enquiry(phone="9876543210")  # simulate a known caller
     state = State.GREET
 
     caller_turns = ["", "Ramesh", "Aryan", "",
