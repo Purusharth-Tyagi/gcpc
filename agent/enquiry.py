@@ -14,3 +14,4 @@ class Enquiry:
     visit_slot: str | None = None
     resolve_fail_count: int = 0
     confirm_fail_count: int = 0
+    pending_course_confirm: str | None = None

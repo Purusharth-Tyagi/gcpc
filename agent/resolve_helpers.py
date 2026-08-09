@@ -1,7 +1,7 @@
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from retrieval.mocks import resolve
+from retrieval.store import resolve
 
 
 def resolve_course(query: str):

@@ -22,7 +22,7 @@ class State(Enum):
 
 def handle_greet(enquiry: Enquiry) -> tuple[str, State]:
     """First turn — greet the caller. Check memory if phone is known."""
-    from retrieval.mocks import recall
+    from retrieval.store import recall
 
     if enquiry.phone:
         past = recall(enquiry.phone, k=1)
@@ -49,20 +49,33 @@ from agent.resolve_helpers import resolve_course, resolve_exam
 def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
     """Fill course, then exam, then score — one slot at a time."""
 
-    # Slot 1: course
     if enquiry.course is None:
+        if enquiry.pending_course_confirm is not None:
+            said = user_said.strip().lower()
+            if said in {"yes", "haan", "ji", "correct", "sahi hai"}:
+                canonical, res = resolve_course(enquiry.pending_course_confirm)
+                enquiry.course = enquiry.pending_course_confirm
+                enquiry.course_payload = res.payload if res else {}
+                enquiry.pending_course_confirm = None
+                return f"Got it — {enquiry.course}. Which entrance exam did you take?", State.ENQUIRE
+            else:
+                enquiry.pending_course_confirm = None
+
         if user_said.strip() == "":
             return "Which course are you interested in?", State.ENQUIRE
         clean_query = extract_query(user_said, "course")
         canonical, res = resolve_course(clean_query)
-        if canonical is None:
-            enquiry.resolve_fail_count += 1
-            if enquiry.resolve_fail_count >= 3:
-                return "Let me connect you to a counsellor for this.", State.ESCALATE
-            return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIRE
-        enquiry.course = canonical
-        enquiry.course_payload = res.payload
-        return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
+        if canonical is not None:
+            enquiry.course = canonical
+            enquiry.course_payload = res.payload
+            return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
+        if res is not None and res.band == "confirm":
+            enquiry.pending_course_confirm = res.canonical
+            return f"Did you mean {res.canonical}? Say yes to confirm, or tell me the correct course.", State.ENQUIRE
+        enquiry.resolve_fail_count += 1
+        if enquiry.resolve_fail_count >= 3:
+            return "Let me connect you to a counsellor for this.", State.ESCALATE
+        return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIRE
 
     # Slot 2: exam
     if enquiry.exam is None:
@@ -319,11 +332,12 @@ def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple
     return "Sorry, something went wrong.", State.ESCALATE
 
 if __name__ == "__main__":
-    e = Enquiry(phone="9876543210")  # simulate a known caller
+    e = Enquiry()
     state = State.GREET
 
     caller_turns = ["", "Ramesh", "Aryan", "",
                      "cse mein interest hai",
+                     "yes",
                      "JEE main diya tha",
                      "91 percentile mila tha",
                      "", "yes", "Saturday 11 AM", "", "haan", ""]
