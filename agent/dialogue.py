@@ -44,7 +44,10 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
             return "Which course are you interested in?", State.ENQUIRE
         canonical, res = resolve_course(user_said)
         if canonical is None:
-            return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIRE
+            enquiry.resolve_fail_count += 1
+            if enquiry.resolve_fail_count >= 3:
+                return "Let me connect you to a counsellor for this.", State.ESCALATE
+            return "Sorry, which course did you mean? Could you repeat that?", State.ENQUIREE
         enquiry.course = canonical
         enquiry.course_payload = res.payload
         return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
@@ -55,6 +58,9 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
             return "Which entrance exam did you take?", State.ENQUIRE
         canonical, res = resolve_exam(user_said)
         if canonical is None:
+            enquiry.resolve_fail_count += 1
+            if enquiry.resolve_fail_count >= 3:
+                return "Let me connect you to a counsellor for this.", State.ESCALATE
             return "Sorry, which exam did you mean?", State.ENQUIRE
         enquiry.exam = canonical
         return f"And what was your {canonical} score?", State.ENQUIRE
@@ -120,6 +126,35 @@ def handle_collect(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         enquiry.visit_slot = user_said.strip()
         return "", State.CONFIRM
     return "", State.CONFIRM
+
+def check_scope_fence(user_said: str) -> bool:
+    """Scholarship, reservation category, fee waivers — always escalate."""
+    said = user_said.lower()
+    fence_words = {"scholarship", "reservation", "quota", "waiver",
+                   "category", "concession", "sc", "st", "obc", "ews"}
+    return any(w in said for w in fence_words)
+
+
+def check_wants_human(user_said: str) -> bool:
+    """Caller explicitly asks for a person."""
+    said = user_said.lower()
+    human_words = {"human", "person", "counsellor", "representative", "talk to someone"}
+    return any(w in said for w in human_words)
+
+def check_scope_fence(user_said: str) -> bool:
+    """Scholarship, reservation category, fee waivers — always escalate."""
+    said = user_said.lower()
+    fence_words = {"scholarship", "reservation", "quota", "waiver",
+                   "category", "concession", "sc", "st", "obc", "ews"}
+    return any(w in said for w in fence_words)
+
+
+def check_wants_human(user_said: str) -> bool:
+    """Caller explicitly asks for a person."""
+    said = user_said.lower()
+    human_words = {"human", "person", "counsellor", "representative", "talk to someone"}
+    return any(w in said for w in human_words)
+
 def classify_repair_target(user_said: str) -> str | None:
     """Guess which slot the caller is correcting. Keyword fallback."""
     said = user_said.lower()
@@ -196,6 +231,13 @@ def handle_book(enquiry: Enquiry) -> tuple[str, State]:
 
 def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple[str, State]:
     """Single entry point — routes to the right handler based on current state."""
+    # Global escalation checks — run before any state-specific logic
+    if current_state not in (State.GREET, State.DONE, State.ESCALATE):
+        if check_scope_fence(user_said):
+            return ("That's something our counsellors handle directly. "
+                    "Let me connect you."), State.ESCALATE
+        if check_wants_human(user_said):
+            return "Sure, connecting you to a counsellor now.", State.ESCALATE
 
     if current_state == State.GREET:
         return handle_greet(enquiry)
@@ -245,12 +287,10 @@ if __name__ == "__main__":
     e = Enquiry()
     state = State.GREET
 
-    caller_turns = ["", "Ramesh", "Aryan", "", "cse", "jee", "91", "",
-                     "yes", "Saturday 11 AM", "", "no not AI ML plain CSE",
-                     "", "haan"]
+    caller_turns = ["", "Ramesh", "Aryan", "", "scholarship kya milegi"]
 
     for said in caller_turns:
         msg, state = handle_turn(e, state, said)
         print(f"[{state.value}] Agent: {msg}")
-        if state == State.DONE:
+        if state in (State.DONE, State.ESCALATE):
             break

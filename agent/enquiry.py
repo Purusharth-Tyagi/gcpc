@@ -12,3 +12,5 @@ class Enquiry:
     score: float | None = None
     language: str = "en"                   # en | hi
     visit_slot: str | None = None
+    resolve_fail_count: int = 0
+    confirm_fail_count: int = 0
