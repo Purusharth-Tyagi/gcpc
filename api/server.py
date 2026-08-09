@@ -257,6 +257,7 @@ _SESSIONS: dict[str, tuple[Enquiry, State]] = {}
 
 
 @app.post("/turn")
+@app.post("/turn")
 def api_turn(inp: TurnIn):
     """One full turn using Lane C's dialogue engine."""
     ensure_loaded()
@@ -267,18 +268,37 @@ def api_turn(inp: TurnIn):
 
     enquiry, state = _SESSIONS[inp.phone]
 
+    t_route_start = time.perf_counter()
     reply, new_state = handle_turn(enquiry, state, inp.text)
+    t_route_end = time.perf_counter()
+
     _SESSIONS[inp.phone] = (enquiry, new_state)
 
     if new_state == State.DONE:
         del _SESSIONS[inp.phone]
 
     used = []
+    course_res_json = None
     if enquiry.course_payload:
-        pass  # resolutions for phoneme injection can be added here later
+        course_res_json = {
+            "canonical": enquiry.course,
+            "band": "accept",
+            "score": 1.0,
+            "alternates": [],
+            "payload": enquiry.course_payload,
+        }
+
+    exam_res_json = None
+    if enquiry.exam:
+        exam_res_json = {
+            "canonical": enquiry.exam,
+            "band": "accept",
+            "score": 1.0,
+            "alternates": [],
+            "payload": {},
+        }
 
     spoken_text = _inject(reply, used, inp.lexicon_on)
-
     audio_bytes = synthesize(spoken_text)
     audio_b64 = base64.b64encode(audio_bytes).decode("utf-8") if audio_bytes else None
 
@@ -290,7 +310,14 @@ def api_turn(inp: TurnIn):
         "speak_lexicon_off": _inject(reply, used, False),
         "speak": spoken_text,
         "audio_base64": audio_b64,
+        "resolutions": {"course": course_res_json, "exam": exam_res_json, "best": None, "best_kind": None},
+        "intent": {"name": state.value, "confidence": 1.0},
+        "eligibility": {"verdict": "unknown", "cutoff": None},
+        "memory": [],
         "latency_ms": {
+            "route": round((t_route_end - t_route_start) * 1000, 2),
+            "resolve_course": 0,
+            "resolve_exam": 0,
             "total": round((time.perf_counter() - t0) * 1000, 2),
         },
     }
