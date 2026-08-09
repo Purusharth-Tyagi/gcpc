@@ -1,5 +1,4 @@
 {
-
   "courses": [
     {
       "id": "c01",
@@ -261,10 +260,10 @@
       "intake_open": true,
       "cutoffs": {"jee_main": null, "cuet": null, "university_test": null}
     }
-  ]
-}
+  ],
+
   "exams": [
-     {
+    {
       "id": "jee_main",
       "canonical": "JEE Main",
       "aliases": ["JEE mains", "mains", "joint entrance", "जेईई मेन"],
@@ -327,8 +326,9 @@
       "score_min": 0,
       "score_max": 100
     }
-],
-  "faculty": [ 
+  ],
+
+  "faculty": [
     {
       "id": "f01",
       "canonical": "Dr. Dhiraj Pandey",
@@ -425,8 +425,9 @@
       "role": "Assistant Professor, MCA",
       "handles": ["MCA"]
     }
-],
-  "campus": [ 
+  ],
+
+  "campus": [
     {
       "id": "cp01",
       "canonical": "JSS University Noida, Sector 62 Campus",
@@ -475,5 +476,5 @@
       "nearest_metro": "Noida Sector 62",
       "visit_slots": ["10:00", "12:00", "15:00"]
     }
-]
+  ]
 }
