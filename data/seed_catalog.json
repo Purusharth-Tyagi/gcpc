@@ -10,7 +10,8 @@
     "AI wala course",
     "artificial intelligence branch",
     "CS with AI specialisation",
-    "कंप्यूटर साइंस एआई"
+    "कंप्यूटर साइंस एआई",
+    "CSE AIML department"
    ],
    "phoneme": "{b1i tEk}",
    "degree": "B.Tech",
@@ -35,7 +36,9 @@
     "CS branch",
     "seeyesee",
     "plain CSE",
-    "कंप्यूटर साइंस"
+    "कंप्यूटर साइंस",
+    "CS department",
+    "computer science department"
    ],
    "phoneme": "{b1i tEk}",
    "degree": "B.Tech",
@@ -58,7 +61,8 @@
     "BTech IT",
     "information technology",
     "IT branch",
-    "आईटी"
+    "आईटी",
+    "IT department"
    ],
    "phoneme": null,
    "degree": "B.Tech",
@@ -81,7 +85,9 @@
     "mechanical",
     "mech branch",
     "mechanical wala",
-    "मैकेनिकल"
+    "मैकेनिकल",
+    "mechanical department",
+    "mech ka department"
    ],
    "phoneme": null,
    "degree": "B.Tech",
@@ -104,7 +110,9 @@
     "electronics",
     "ECE branch",
     "electronics and communication",
-    "इलेक्ट्रॉनिक्स"
+    "इलेक्ट्रॉनिक्स",
+    "ECE department",
+    "electronics department"
    ],
    "phoneme": null,
    "degree": "B.Tech",
@@ -126,7 +134,9 @@
     "BTech civil",
     "civil",
     "civil branch",
-    "सिविल"
+    "सिविल",
+    "civil department",
+    "civil ka department"
    ],
    "phoneme": null,
    "degree": "B.Tech",
@@ -187,6 +197,32 @@
     "university_test": 55.0
    },
    "phoneme_for": "Master of Business Administration"
+  },
+  {
+   "id": "c09",
+   "canonical": "B.Tech Computer Science and Engineering (Data Science)",
+   "aliases": [
+    "data science branch",
+    "BTech data science",
+    "DS branch",
+    "data science wala course",
+    "CSE data science",
+    "डेटा साइंस",
+    "data science department"
+   ],
+   "phoneme": "{b1i tEk}",
+   "phoneme_for": "B.Tech",
+   "degree": "B.Tech",
+   "branch": "CSE-DS",
+   "duration_years": 4,
+   "fees_per_year": 175000,
+   "seats": 60,
+   "intake_open": true,
+   "cutoffs": {
+    "jee_main": 85.0,
+    "cuet": 89.0,
+    "university_test": 62.0
+   }
   }
  ],
  "exams": [
@@ -258,6 +294,21 @@
    "score_type": "rank",
    "score_min": 1,
    "score_max": 250000
+  },
+  {
+   "id": "mid_sem",
+   "canonical": "Mid Semester Examination",
+   "aliases": [
+    "mid sems",
+    "mid sems kab hai",
+    "midsem",
+    "mid term",
+    "internal exam"
+   ],
+   "phoneme": null,
+   "score_type": "marks",
+   "score_min": 0,
+   "score_max": 100
   }
  ],
  "faculty": [
@@ -307,6 +358,40 @@
     "ALL"
    ],
    "phoneme_for": "Ananya Bhattacharya"
+  },
+  {
+   "id": "f04",
+   "canonical": "Prof. Arindam Mukherjee",
+   "aliases": [
+    "mukherjee sir",
+    "mukherjee sir ka DBMS",
+    "DBMS wale sir",
+    "database faculty"
+   ],
+   "phoneme": "{mUk1OrJ0i}",
+   "phoneme_for": "Mukherjee",
+   "role": "Professor, Databases",
+   "handles": [
+    "CSE",
+    "CSE-AIML",
+    "CSE-DS"
+   ]
+  },
+  {
+   "id": "f05",
+   "canonical": "Dr. Neha Sharma",
+   "aliases": [
+    "sharma maam",
+    "sharma sir OS class",
+    "operating systems faculty",
+    "OS wali maam"
+   ],
+   "phoneme": null,
+   "role": "Professor, Operating Systems",
+   "handles": [
+    "CSE",
+    "IT"
+   ]
   }
  ],
  "campus": [
@@ -342,6 +427,39 @@
     "14:00"
    ],
    "phoneme_for": "Indirapuram"
+  },
+  {
+   "id": "cp03",
+   "canonical": "Physics Laboratory, Block B",
+   "aliases": [
+    "phy lab",
+    "physics lab",
+    "phy lab wali building",
+    "lab building"
+   ],
+   "phoneme": null,
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "11:00",
+    "14:00"
+   ]
+  },
+  {
+   "id": "cp04",
+   "canonical": "Training and Placement Cell",
+   "aliases": [
+    "placement cell",
+    "placement wala cell",
+    "TnP",
+    "placement office",
+    "training and placement"
+   ],
+   "phoneme": null,
+   "nearest_metro": "Vaishali",
+   "visit_slots": [
+    "10:00",
+    "15:00"
+   ]
   }
  ],
  "intents": [

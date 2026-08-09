@@ -256,3 +256,21 @@ def recall(phone: str, context: str | None = None, k: int = 3) -> list[str]:
     ).points
     return [h.payload["fact"] for h in hits]
 
+
+def resolve_best(text: str, kinds: list[str] | None = None) -> tuple[str, "Resolution"] | None:
+    """Search EVERY collection and return the best hit as (kind, Resolution).
+
+    The console was only ever querying courses, so "doctor Iyer maam" was
+    scored against course names and failed. Callers rarely announce which
+    catalog they mean — the router decides intent, but the entity could be a
+    course, an exam, a faculty member, or a building. Ask all four.
+
+    ~4ms total on the ngram embedder. Cheap enough to always do.
+    """
+    kinds = kinds or ["course", "exam", "faculty", "campus"]
+    best = None
+    for k in kinds:
+        r = resolve(text, k)
+        if r and (best is None or r.score > best[1].score):
+            best = (k, r)
+    return best

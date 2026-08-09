@@ -22,13 +22,15 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from fastapi import FastAPI                          # noqa: E402
+from fastapi import FastAPI, HTTPException           # noqa: E402
+from fastapi.responses import Response                # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware   # noqa: E402
 from fastapi.staticfiles import StaticFiles          # noqa: E402
 from pydantic import BaseModel                       # noqa: E402
 
 from retrieval.store import (resolve, route, recall, remember, client,   # noqa: E402
-                            ensure_collections, upsert_rows, is_local_mode)
+                            ensure_collections, upsert_rows, is_local_mode,
+                            resolve_best)
 
 CATALOG = os.getenv("CATALOG", "data/catalog.json")
 if not os.path.exists(CATALOG):
@@ -153,6 +155,58 @@ def api_remember(phone: str, fact: str):
     return {"ok": True}
 
 
+# ------------------------------------------------------------ Rime TTS
+RIME_URL = "https://users.rime.ai/v1/rime-tts"
+RIME_MODEL = os.getenv("RIME_MODEL", "mistv3")
+RIME_SPEAKER = os.getenv("RIME_SPEAKER", "abbie")
+RIME_SPEAKER_HI = os.getenv("RIME_SPEAKER_HI", "")
+
+
+class SpeakIn(BaseModel):
+    text: str
+    lang: str = "eng"
+
+
+@app.post("/speak")
+def api_speak(inp: SpeakIn):
+    """Text -> audio/wav via Rime.
+
+    Send the phoneme-injected string here (speak_lexicon_on from /turn), not
+    the plain one. The brace tokens are what make Rime say the names right,
+    and phonemizeBetweenBrackets is what tells it to honour them.
+    """
+    key = os.getenv("RIME_API_KEY")
+    if not key:
+        raise HTTPException(503, "RIME_API_KEY not set")
+
+    speaker = RIME_SPEAKER_HI if (inp.lang == "hin" and RIME_SPEAKER_HI) else RIME_SPEAKER
+    import urllib.request, json as _json
+    body = _json.dumps({
+        "text": inp.text,
+        "speaker": speaker,
+        "modelId": RIME_MODEL,
+        "phonemizeBetweenBrackets": True,
+        "lang": inp.lang,
+    }).encode()
+    req = urllib.request.Request(
+        RIME_URL, data=body,
+        headers={"Authorization": f"Bearer {key}",
+                 "Content-Type": "application/json",
+                 "Accept": "audio/wav"},
+    )
+    try:
+        t = time.perf_counter()
+        with urllib.request.urlopen(req, timeout=30) as r:
+            audio = r.read()
+        ms = round((time.perf_counter() - t) * 1000, 1)
+        return Response(content=audio, media_type="audio/wav",
+                        headers={"X-TTS-Ms": str(ms), "X-Rime-Model": RIME_MODEL})
+    except Exception as e:
+        detail = getattr(e, "read", lambda: b"")()
+        raise HTTPException(502, f"Rime: {type(e).__name__}: {str(e)[:200]} "
+                                 f"{detail[:200].decode(errors='ignore')}")
+
+
 # ---------------------------------------- STUBS mirroring C's contract
 def _parse_score(text):
     m = re.search(r"(\d{1,3}(?:\.\d+)?)\s*(?:percentile|percent|%|marks)?", text)
@@ -204,6 +258,12 @@ def api_turn(inp: TurnIn):
     exam = resolve(inp.text, "exam")
     t3 = time.perf_counter()
 
+    # The entity might not be a course at all — a caller asking about a
+    # building or a faculty member was previously scored against course names
+    # and failed. Search every collection and keep the best.
+    best = resolve_best(inp.text)
+    best_kind, best_res = best if best else (None, None)
+
     score = _parse_score(inp.text)
     verdict, cutoff = _eligibility(course, exam, score)
     facts = recall(inp.phone, context=inp.text, k=2)
@@ -226,7 +286,8 @@ def api_turn(inp: TurnIn):
     return {
         "heard": inp.text,
         "intent": {"name": intent.name, "confidence": intent.confidence},
-        "resolutions": {"course": _res_json(course), "exam": _res_json(exam)},
+        "resolutions": {"course": _res_json(course), "exam": _res_json(exam),
+                        "best": _res_json(best_res), "best_kind": best_kind},
         "score": score,
         "eligibility": {"verdict": verdict, "cutoff": cutoff},
         "memory": facts,
@@ -250,4 +311,3 @@ if os.path.isdir(UI_DIR):
     print(f"[ui] serving {UI_DIR} at /")
 else:
     print(f"[ui] no {UI_DIR} folder — API only")
-
