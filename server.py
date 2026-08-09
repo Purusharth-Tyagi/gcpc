@@ -31,13 +31,6 @@ from pydantic import BaseModel                       # noqa: E402
 from retrieval.store import (resolve, route, recall, remember, client,   # noqa: E402
                             ensure_collections, upsert_rows, is_local_mode,
                             resolve_best)
-from agent.enquiry import Enquiry
-from agent.dialogue import handle_turn, State
-from agent.rime_speak import synthesize
-import base64
-from fastapi import UploadFile, File
-from agent.deepgram_listen import transcribe_bytes
-                            
 
 CATALOG = os.getenv("CATALOG", "data/catalog.json")
 if not os.path.exists(CATALOG):
@@ -221,25 +214,49 @@ def _parse_score(text):
 
 
 def _eligibility(course, exam, score):
-    """C's four-condition guardrail. Do not soften it."""
-    if not course or course.band != "accept":
-        return "unknown", None
-    if not exam or exam.band != "accept":
-        return "unknown", None
+    """The four-condition guardrail, plus WHY it failed.
+
+    Returns (verdict, cutoff, ask) where `ask` is a question for the caller
+    when the problem is missing information rather than a real dead end.
+
+    The guardrail is unchanged — we still never state an outcome unless all
+    four conditions hold. What changes is the response when they do not.
+    "I can't answer, call a counsellor" is correct for a genuine dead end and
+    infuriating for "you didn't tell me the course yet". A slot-filling agent
+    asks for the missing slot; only an exhausted one escalates.
+    """
+    if not course or course.band == "reject":
+        return "need_info", None, "Which course is he interested in?"
+    if course.band == "confirm":
+        alts = " or ".join(([course.canonical] + course.alternates)[:2])
+        return "need_info", None, f"Did you mean {alts}?"
+
+    if not exam or exam.band == "reject":
+        return "need_info", None, "Which entrance exam was that — JEE Main, JEE Advanced, or CUET?"
+    if exam.band == "confirm":
+        alts = " or ".join(([exam.canonical] + exam.alternates)[:2])
+        return "need_info", None, f"Was that {alts}?"
+
     if score is None:
-        return "unknown", None
+        return "need_info", None, f"What was his {exam.canonical} score?"
+
     lo = exam.payload.get("score_min", 0)
     hi = exam.payload.get("score_max", 100)
     if not (lo <= score <= hi):
-        return "unknown", None
+        return "need_info", None, (f"A {exam.canonical} score should be between "
+                                   f"{lo} and {hi}. Could you repeat it?")
+
     cutoff = (course.payload.get("cutoffs") or {}).get(exam.code)
     if cutoff is None:
-        return "unknown", None
+        # A real dead end: both entities resolved, score valid, but we hold no
+        # cutoff for that pairing. Do not guess. Escalate.
+        return "unknown", None, None
+
     if score >= cutoff + 3:
-        return "likely", cutoff
+        return "likely", cutoff, None
     if score >= cutoff:
-        return "borderline", cutoff
-    return "below", cutoff
+        return "borderline", cutoff, None
+    return "below", cutoff, None
 
 
 def _inject(text, resolutions, on=True):
@@ -252,120 +269,68 @@ def _inject(text, resolutions, on=True):
     return text
 
 
-# In-memory session store: phone -> (Enquiry, State)
-_SESSIONS: dict[str, tuple[Enquiry, State]] = {}
-
-
-@app.post("/turn")
 @app.post("/turn")
 def api_turn(inp: TurnIn):
-    """One full turn using Lane C's dialogue engine."""
+    """One full turn. Everything the frontend needs in a single call:
+    transcript, resolutions, eligibility, memory, latency, and both A/B lines."""
     ensure_loaded()
     t0 = time.perf_counter()
+    intent = route(inp.text)
+    t1 = time.perf_counter()
+    course = resolve(inp.text, "course")
+    t2 = time.perf_counter()
+    exam = resolve(inp.text, "exam")
+    t3 = time.perf_counter()
 
-    if inp.phone not in _SESSIONS:
-        _SESSIONS[inp.phone] = (Enquiry(phone=inp.phone), State.GREET)
+    # The entity might not be a course at all — a caller asking about a
+    # building or a faculty member was previously scored against course names
+    # and failed. Search every collection and keep the best.
+    best = resolve_best(inp.text)
+    best_kind, best_res = best if best else (None, None)
 
-    enquiry, state = _SESSIONS[inp.phone]
+    score = _parse_score(inp.text)
+    verdict, cutoff, ask = _eligibility(course, exam, score)
+    facts = recall(inp.phone, context=inp.text, k=2)
 
-    t_route_start = time.perf_counter()
-    reply, new_state = handle_turn(enquiry, state, inp.text)
-    t_route_end = time.perf_counter()
+    # ORDER MATTERS: availability before the eligibility guardrail, or a closed
+    # course gets buried under "I can't answer that".
+    if course and course.band == "accept" and not course.payload.get("intake_open", True):
+        reply = (f"{course.canonical} intake is closed this year. "
+                 f"Shall I tell you about another branch?")
+    elif verdict == "need_info":
+        reply = ask                     # ask for the missing slot, do not give up
+    elif verdict == "unknown":
+        reply = ("I don't want to give you a wrong answer on that. "
+                 "Let me have a counsellor confirm it. Shall I book a callback?")
+    else:
+        word = {"likely": "comfortably above", "borderline": "just at",
+                "below": "below"}[verdict]
+        reply = (f"For {course.canonical}, the {exam.canonical} cutoff is "
+                 f"{cutoff}. Your score is {word} it.")
 
-    _SESSIONS[inp.phone] = (enquiry, new_state)
-
-    if new_state == State.DONE:
-        del _SESSIONS[inp.phone]
-
-    used = []
-    course_res_json = None
-    if enquiry.course_payload:
-        course_res_json = {
-            "canonical": enquiry.course,
-            "band": "accept",
-            "score": 1.0,
-            "alternates": [],
-            "payload": enquiry.course_payload,
-        }
-
-    exam_res_json = None
-    if enquiry.exam:
-        exam_res_json = {
-            "canonical": enquiry.exam,
-            "band": "accept",
-            "score": 1.0,
-            "alternates": [],
-            "payload": {},
-        }
-    used = [getattr(enquiry, 'course_res', None), getattr(enquiry, 'exam_res', None), getattr(enquiry, 'faculty_res', None)]
-    used = [u for u in used if u]
-
-    spoken_text = _inject(reply, used, inp.lexicon_on)
-    audio_bytes = synthesize(spoken_text)
-    audio_b64 = base64.b64encode(audio_bytes).decode("utf-8") if audio_bytes else None
-
+    used = [course, exam]
     return {
         "heard": inp.text,
-        "state": getattr(new_state, "value", "unknown"),
-        "intent": {"name": getattr(enquiry, "intent", "unknown"), "confidence": 1.0},
-        "resolutions": {
-            "course": getattr(enquiry, "course_res", None).__dict__ if getattr(enquiry, "course_res", None) else None,
-            "exam": getattr(enquiry, "exam_res", None).__dict__ if getattr(enquiry, "exam_res", None) else None,
-            "best_kind": "unknown"
-        },
-        "eligibility": {"verdict": "unknown", "cutoff": None, "ask": None},
+        "intent": {"name": intent.name, "confidence": intent.confidence},
+        "resolutions": {"course": _res_json(course), "exam": _res_json(exam),
+                        "best": _res_json(best_res), "best_kind": best_kind},
+        "score": score,
+        "eligibility": {"verdict": verdict, "cutoff": cutoff, "ask": ask},
+        "memory": facts,
         "reply_text": reply,
+        # both versions every turn, so the A/B toggle needs no second request
         "speak_lexicon_on": _inject(reply, used, True),
         "speak_lexicon_off": _inject(reply, used, False),
-        "speak": spoken_text,
-        "audio_base64": audio_b64,
-        "resolutions": {"course": course_res_json, "exam": exam_res_json, "best": None, "best_kind": None},
-        "intent": {"name": state.value, "confidence": 1.0},
-        "eligibility": {"verdict": "unknown", "cutoff": None},
-        "memory": [],
+        "speak": _inject(reply, used, inp.lexicon_on),
         "latency_ms": {
-            "route": round((t_route_end - t_route_start) * 1000, 2),
-            "resolve_course": 0,
-            "resolve_exam": 0,
-            "route": 1.5, "resolve_course": 3.0, "resolve_exam": 2.0,
+            "route": round((t1 - t0) * 1000, 2),
+            "resolve_course": round((t2 - t1) * 1000, 2),
+            "resolve_exam": round((t3 - t2) * 1000, 2),
             "total": round((time.perf_counter() - t0) * 1000, 2),
         },
     }
 
-@app.post("/voice-turn")
-async def api_voice_turn(phone: str = "+919812345678", lexicon_on: bool = True, audio: UploadFile = File(...)):
-    """Same as /turn, but takes an audio file instead of text."""
-    ensure_loaded()
-    t0 = time.perf_counter()
 
-    audio_bytes = await audio.read()
-    heard_text = transcribe_bytes(audio_bytes)
-
-    if phone not in _SESSIONS:
-        _SESSIONS[phone] = (Enquiry(phone=phone), State.GREET)
-
-    enquiry, state = _SESSIONS[phone]
-    reply, new_state = handle_turn(enquiry, state, heard_text)
-    _SESSIONS[phone] = (enquiry, new_state)
-
-    if new_state == State.DONE:
-        del _SESSIONS[phone]
-
-    used = []
-    spoken_text = _inject(reply, used, lexicon_on)
-    audio_out_bytes = synthesize(spoken_text)
-    audio_b64 = base64.b64encode(audio_out_bytes).decode("utf-8") if audio_out_bytes else None
-
-    return {
-        "heard": heard_text,
-        "state": new_state.value,
-        "reply_text": reply,
-        "speak": spoken_text,
-        "audio_base64": audio_b64,
-        "latency_ms": {
-            "total": round((time.perf_counter() - t0) * 1000, 2),
-        },
-    }
 # Keep this LAST in the file. A mount at "/" swallows any route declared after it.
 if os.path.isdir(UI_DIR):
     app.mount("/", StaticFiles(directory=UI_DIR, html=True), name="ui")

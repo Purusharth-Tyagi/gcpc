@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><title>College Voice Desk</title></head>
+<body style="font-family:system-ui;padding:24px;max-width:760px">
+<h2>College Voice Desk — wire test</h2>
+<input id="q" size="60" value="my son got 91 percentile in JEE Main can he get CSE AI ML">
+<button onclick="go()">send</button>
+<label style="margin-left:12px"><input type="checkbox" id="lex" checked> lexicon</label>
+<pre id="out" style="background:#f4f4f4;padding:12px;white-space:pre-wrap"></pre>
+<script>
+async function go(){
+  const r = await fetch("/turn",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text:document.getElementById("q").value,
+                         lexicon_on:document.getElementById("lex").checked})});
+  const d = await r.json();
+  document.getElementById("out").textContent =
+    "SAY: "+d.speak+"\n\nintent: "+d.intent.name+" ("+d.intent.confidence+")"+
+    "\ncourse: "+(d.resolutions.course?d.resolutions.course.canonical+" ["+d.resolutions.course.band+"]":"-")+
+    "\nverdict: "+d.eligibility.verdict+"  cutoff "+d.eligibility.cutoff+
+    "\nlatency: "+d.latency_ms.total+"ms";
+}
+</script></body></html>

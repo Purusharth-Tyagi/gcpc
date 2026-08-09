@@ -1,8 +1,5 @@
 """Lane B core. resolve() / route() / recall() over Qdrant."""
-
 import os, sys, zlib
-from dotenv import load_dotenv
-load_dotenv()
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue,
