@@ -120,9 +120,58 @@ def handle_collect(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         enquiry.visit_slot = user_said.strip()
         return "", State.CONFIRM
     return "", State.CONFIRM
+def classify_repair_target(user_said: str) -> str | None:
+    """Guess which slot the caller is correcting. Keyword fallback."""
+    said = user_said.lower()
+
+    score_words = {"percentile", "score", "marks"}
+    exam_words = {"cuet", "jee", "cet", "exam"}
+    course_words = {"course", "branch", "cse", "ece", "btech", "b.tech"}
+    slot_words = {"saturday", "sunday", "monday", "tuesday", "wednesday",
+                  "thursday", "friday", "time", "date", "slot"}
+
+    if any(w in said for w in score_words) or any(ch.isdigit() for ch in said):
+        return "score"
+    if any(w in said for w in exam_words):
+        return "exam"
+    if any(w in said for w in course_words):
+        return "course"
+    if any(w in said for w in slot_words):
+        return "visit_slot"
+    return None
+
+def handle_repair(enquiry: Enquiry, user_said: str, repair_count: int) -> tuple[str, State, int]:
+    """Clear the targeted slot and go back to collecting it. Cap at 3 loops."""
+    repair_count += 1
+
+    if repair_count > 3:
+        return ("I'm having trouble getting this right. Let me connect you "
+                "to a counsellor."), State.ESCALATE, repair_count
+
+    target = classify_repair_target(user_said)
+
+    if target is None:
+        return ("Sorry, which part should I change — the course, the score, "
+                "or the visit time?"), State.CONFIRM, repair_count
+
+    if target == "course":
+        enquiry.course = None
+        enquiry.course_payload = None
+        return "No problem, which course did you mean?", State.ENQUIRE, repair_count
+    if target == "exam":
+        enquiry.exam = None
+        return "Got it, which exam was it?", State.ENQUIRE, repair_count
+    if target == "score":
+        enquiry.score = None
+        return "Okay, what was the correct score?", State.ENQUIRE, repair_count
+    if target == "visit_slot":
+        enquiry.visit_slot = None
+        return "Sure, what date/time works instead?", State.COLLECT, repair_count
+
+    return "Let's try that again.", State.CONFIRM, repair_count 
 
 def handle_confirm(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
-    """Read back everything, wait for explicit yes."""
+    """Read back everything, wait for explicit yes. Anything else triggers repair."""
     from agent.readback import readback
 
     if user_said.strip() == "":
@@ -133,8 +182,9 @@ def handle_confirm(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
 
     if any(w in said for w in yes_words):
         return "", State.BOOK
-    # anything ambiguous (including "no") — ask again, never assume
-    return readback(enquiry), State.CONFIRM
+
+    # Not a yes — treat as a correction attempt
+    return "REPAIR_NEEDED", State.CONFIRM
 
 import random
 
@@ -144,30 +194,63 @@ def handle_book(enquiry: Enquiry) -> tuple[str, State]:
     msg = f"You're all set. Your campus visit reference is {ref_id}. Thank you for calling!"
     return msg, State.DONE
 
+def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple[str, State]:
+    """Single entry point — routes to the right handler based on current state."""
+
+    if current_state == State.GREET:
+        return handle_greet(enquiry)
+
+    if current_state == State.IDENTIFY:
+        if enquiry.caller_name is None and user_said.strip():
+            enquiry.caller_name = user_said.strip()
+            return "And who is the applicant — your child's name?", State.IDENTIFY
+        if enquiry.applicant_name is None and user_said.strip():
+            enquiry.applicant_name = user_said.strip()
+            return "Great. What would you like to know about?", State.ENQUIRE
+        return handle_identify(enquiry, user_said)
+
+    if current_state == State.CONFIRM:
+        msg, new_state = handle_confirm(enquiry, user_said)
+        if msg == "REPAIR_NEEDED":
+            repair_msg, repair_state, enquiry._repair_count = handle_repair(
+                enquiry, user_said, getattr(enquiry, "_repair_count", 0)
+            )
+            return repair_msg, repair_state
+        return msg, new_state
+    if current_state == State.ENQUIRE:
+        return handle_enquire(enquiry, user_said)
+
+    if current_state == State.ELIGIBILITY:
+        return handle_eligibility(enquiry)
+
+    if current_state == State.OFFER:
+        return handle_offer(enquiry, user_said)
+
+    if current_state == State.COLLECT:
+        return handle_collect(enquiry, user_said)
+
+
+    if current_state == State.BOOK:
+        return handle_book(enquiry)
+
+    if current_state == State.DONE:
+        return "Thank you, have a great day!", State.DONE
+
+    if current_state == State.ESCALATE:
+        return "I'm connecting you to a counsellor, one moment.", State.ESCALATE
+
+    return "Sorry, something went wrong.", State.ESCALATE
+
 if __name__ == "__main__":
-    e = Enquiry(
-        applicant_name="Aryan",
-        course="B.Tech Computer Science and Engineering (AI & ML)",
-        course_payload={"cutoffs": {"jee_main": 88.0}},
-        exam="JEE Main",
-        score=91.0
-    )
+    e = Enquiry()
+    state = State.GREET
 
-    msg, state = handle_eligibility(e)
-    print(f"Agent: {msg}")
+    caller_turns = ["", "Ramesh", "Aryan", "", "cse", "jee", "91", "",
+                     "yes", "Saturday 11 AM", "", "no not AI ML plain CSE",
+                     "", "haan"]
 
-    msg, state = handle_offer(e, "yes")
-    print(f"Agent: {msg}")
-
-    msg, state = handle_collect(e, "Saturday 11 AM")
-    print(f"State after collect: {state.value}")
-
-    msg, state = handle_confirm(e, "")
-    print(f"Agent: {msg}")
-
-    msg, state = handle_confirm(e, "haan")
-    print(f"Next state: {state.value}")
-
-    msg, state = handle_book(e)
-    print(f"Agent: {msg}")
-    print(f"Final state: {state.value}")
+    for said in caller_turns:
+        msg, state = handle_turn(e, state, said)
+        print(f"[{state.value}] Agent: {msg}")
+        if state == State.DONE:
+            break
