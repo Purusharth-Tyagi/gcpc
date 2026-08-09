@@ -240,6 +240,20 @@
    "score_type": "marks",
    "score_min": 0,
    "score_max": 100
+  },
+  {
+   "id": "jee_adv",
+   "canonical": "JEE Advanced",
+   "aliases": [
+    "advanced",
+    "jee advance",
+    "advance ka exam",
+    "iit ka exam"
+   ],
+   "phoneme": "{J1i 1i 1i 2advA1nst}",
+   "score_type": "rank",
+   "score_min": 1,
+   "score_max": 250000
   }
  ],
  "faculty": [
@@ -396,7 +410,12 @@
     "duration kitna hai",
     "course ke bare mein batao",
     "syllabus kya hai",
-    "how many years"
+    "how many years",
+    "kitne saal ka course hai",
+    "duration kitna hai",
+    "how many years",
+    "kya kya padhaya jayega",
+    "course details"
    ]
   },
   {

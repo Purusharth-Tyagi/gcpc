@@ -51,21 +51,31 @@ def ensure_collections(wipe: bool = False) -> None:
             )
 
 
-def alias_blob(row: dict) -> str:
-    """Embed canonical PLUS every alias. This single line is worth more than
-    any model choice: callers say 'AI wala course', not the catalog name."""
-    return " | ".join([row["canonical"], *row.get("aliases", [])])
+def surface_forms(row: dict) -> list[str]:
+    """Every string a caller might say for this row."""
+    return [row["canonical"], *row.get("aliases", [])]
 
 
 def upsert_rows(collection: str, rows: list[dict]) -> None:
-    points = [
-        PointStruct(
-            id=point_id(r["id"]),
-            vector=embed(alias_blob(r)),
-            payload={**r, "code": r["id"]},
-        )
-        for r in rows
-    ]
+    """ONE POINT PER SURFACE FORM, not one per row.
+
+    A single blended vector per row fails two ways:
+      - short queries ("CSE") drown in a long blob and match the wrong row
+      - Devanagari aliases are a tiny fraction of a Latin-dominated blob,
+        so a pure-Devanagari query matches almost nothing
+    Giving each alias its own vector fixes both. Rows are ~100 and aliases
+    ~7 each, so this is under a thousand points. Free.
+
+    resolve() dedupes back to one hit per row by payload["code"].
+    """
+    points = []
+    for r in rows:
+        for i, form in enumerate(surface_forms(r)):
+            points.append(PointStruct(
+                id=point_id(f"{r['id']}#{i}"),
+                vector=embed(form),
+                payload={**r, "code": r["id"], "matched_form": form},
+            ))
     client.upsert(collection_name=collection, points=points)
 
 
@@ -91,12 +101,21 @@ def resolve(text: str, kind: str, filters: dict | None = None) -> Resolution | N
         collection_name=collection,
         query=embed(text),
         query_filter=qfilter,      # filter DURING search, never after
-        limit=3,
+        limit=15,                  # over-fetch: several points share one code
     ).points
     if not hits:
         return None
-    top = hits[0]
-    second = hits[1].score if len(hits) > 1 else 0.0
+
+    # collapse surface-form hits down to one per row, keeping the best
+    best: dict[str, object] = {}
+    for h in hits:
+        code = h.payload["code"]
+        if code not in best:
+            best[code] = h
+    ranked = list(best.values())
+
+    top = ranked[0]
+    second = ranked[1].score if len(ranked) > 1 else 0.0
     return Resolution(
         code=top.payload["code"],
         canonical=top.payload["canonical"],
@@ -104,11 +123,15 @@ def resolve(text: str, kind: str, filters: dict | None = None) -> Resolution | N
         score=round(top.score, 4),
         band=_band(top.score, second),
         payload=top.payload,
-        alternates=[h.payload["canonical"] for h in hits[1:]],
+        alternates=[h.payload["canonical"] for h in ranked[1:3]],
     )
 
 
-ROUTE_MIN = 0.30
+# Measured, not guessed. With one point per surface form:
+#   legitimate intents  min 0.805
+#   off-topic input     max 0.510
+# 0.65 sits in the gap. Re-measure if you change the embedder or add intents.
+ROUTE_MIN = 0.65
 
 
 def route(text: str) -> Intent:
@@ -133,4 +156,3 @@ def recall(phone: str, k: int = 3) -> list[str]:
         limit=k,
     ).points
     return [h.payload["fact"] for h in hits]
-
