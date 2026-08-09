@@ -7,6 +7,7 @@ class Enquiry:
     phone: str | None = None
     applicant_name: str | None = None      # often the caller's child, not the caller
     course: str | None = None              # resolved canonical only
+    course_payload: dict[str, Any] | None = None   # NEW — stores cutoffs, fees etc
     exam: str | None = None                # resolved canonical only
     score: float | None = None
     language: str = "en"                   # en | hi
