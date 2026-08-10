@@ -1,20 +1,79 @@
 <!doctype html><html><head><meta charset="utf-8"><title>College Voice Desk</title></head>
-<body style="font-family:system-ui;padding:24px;max-width:760px">
-<h2>College Voice Desk — wire test</h2>
-<input id="q" size="60" value="my son got 91 percentile in JEE Main can he get CSE AI ML">
-<button onclick="go()">send</button>
-<label style="margin-left:12px"><input type="checkbox" id="lex" checked> lexicon</label>
-<pre id="out" style="background:#f4f4f4;padding:12px;white-space:pre-wrap"></pre>
+<body style="font-family:system-ui;padding:24px;max-width:760px;margin:auto">
+<h2>🎓 College Admissions Voice Desk</h2>
+
+<div style="margin-bottom:16px">
+  <button id="recBtn" style="font-size:18px;padding:12px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;cursor:pointer">🎤 Hold to Talk</button>
+  <label style="margin-left:16px"><input type="checkbox" id="lex" checked> lexicon (phoneme fix)</label>
+</div>
+
+<div id="status" style="color:#666;margin-bottom:12px">Ready. Press and hold the button, speak, then release.</div>
+
+<div id="conversation" style="background:#f4f4f4;padding:16px;border-radius:8px;min-height:200px;white-space:pre-wrap"></div>
+
+<audio id="player" style="width:100%;margin-top:12px"></audio>
+
 <script>
-async function go(){
-  const r = await fetch("/turn",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({text:document.getElementById("q").value,
-                         lexicon_on:document.getElementById("lex").checked})});
-  const d = await r.json();
-  document.getElementById("out").textContent =
-    "SAY: "+d.speak+"\n\nintent: "+d.intent.name+" ("+d.intent.confidence+")"+
-    "\ncourse: "+(d.resolutions.course?d.resolutions.course.canonical+" ["+d.resolutions.course.band+"]":"-")+
-    "\nverdict: "+d.eligibility.verdict+"  cutoff "+d.eligibility.cutoff+
-    "\nlatency: "+d.latency_ms.total+"ms";
+const PHONE = "+919812345678"; // fixed demo caller id
+let mediaRecorder, chunks = [];
+const statusEl = document.getElementById("status");
+const convoEl = document.getElementById("conversation");
+const recBtn = document.getElementById("recBtn");
+const player = document.getElementById("player");
+
+function log(who, text) {
+  convoEl.textContent += `${who}: ${text}\n\n`;
+  convoEl.scrollTop = convoEl.scrollHeight;
 }
-</script></body></html>
+
+async function startRecording() {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  chunks = [];
+  mediaRecorder.ondataavailable = e => chunks.push(e.data);
+  mediaRecorder.onstop = sendAudio;
+  mediaRecorder.start();
+  statusEl.textContent = "🔴 Recording... release to send";
+  recBtn.style.background = "#27ae60";
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+  recBtn.style.background = "#c0392b";
+}
+
+async function sendAudio() {
+  statusEl.textContent = "⏳ Processing...";
+  const blob = new Blob(chunks, { type: "audio/webm" });
+  const form = new FormData();
+  form.append("audio", blob, "recording.webm");
+
+  const lexOn = document.getElementById("lex").checked;
+  const url = `/voice-turn?phone=${encodeURIComponent(PHONE)}&lexicon_on=${lexOn}`;
+
+  try {
+    const r = await fetch(url, { method: "POST", body: form });
+    const d = await r.json();
+
+    if (d.heard) log("You said", d.heard);
+    log("Agent", d.reply_text);
+
+    if (d.audio_base64) {
+      player.src = "data:audio/wav;base64," + d.audio_base64;
+      player.play();
+    }
+    statusEl.textContent = `Done (${d.latency_ms?.total ?? "?"}ms). Press and hold to talk again.`;
+  } catch (err) {
+    statusEl.textContent = "❌ Error: " + err.message;
+  }
+}
+
+recBtn.addEventListener("mousedown", startRecording);
+recBtn.addEventListener("mouseup", stopRecording);
+recBtn.addEventListener("touchstart", e => { e.preventDefault(); startRecording(); });
+recBtn.addEventListener("touchend", e => { e.preventDefault(); stopRecording(); });
+</script>
+</body></html>

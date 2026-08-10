@@ -64,6 +64,11 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         if user_said.strip() == "":
             return "Which course are you interested in?", State.ENQUIRE
         clean_query = extract_query(user_said, "course")
+        if clean_query == "":
+            enquiry.resolve_fail_count += 1
+            if enquiry.resolve_fail_count >= 3:
+                return "Let me connect you to a counsellor for this.", State.ESCALATE
+            return "Sorry, which course are you interested in?", State.ENQUIRE
         canonical, res = resolve_course(clean_query)
         if canonical is not None:
             enquiry.course = canonical
@@ -82,6 +87,11 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         if user_said.strip() == "":
             return "Which entrance exam did you take?", State.ENQUIRE
         clean_query = extract_query(user_said, "exam")
+        if clean_query == "":
+            enquiry.resolve_fail_count += 1
+            if enquiry.resolve_fail_count >= 3:
+                return "Let me connect you to a counsellor for this.", State.ESCALATE
+            return "Sorry, which exam did you mean?", State.ENQUIRE
         canonical, res = resolve_exam(clean_query)
         if canonical is None:
             enquiry.resolve_fail_count += 1
@@ -293,8 +303,6 @@ def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple
     if current_state == State.IDENTIFY:
         if enquiry.caller_name is None and user_said.strip():
             enquiry.caller_name = user_said.strip()
-            return "And who is the applicant — your child's name?", State.IDENTIFY
-        if enquiry.applicant_name is None and user_said.strip():
             enquiry.applicant_name = user_said.strip()
             return "Great. What would you like to know about?", State.ENQUIRE
         return handle_identify(enquiry, user_said)

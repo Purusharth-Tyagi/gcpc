@@ -74,7 +74,7 @@ def ensure_loaded():
     except Exception:
         n = 0
     if n == 0:
-        cat = json.load(open(CATALOG))
+        cat = json.load(open(CATALOG, encoding="utf-8"))
         ensure_collections(wipe=True)
         for c in ["courses", "exams", "faculty", "campus", "intents"]:
             upsert_rows(c, cat.get(c, []))
