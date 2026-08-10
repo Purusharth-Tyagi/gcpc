@@ -278,8 +278,8 @@ def api_turn(inp: TurnIn):
 
     _SESSIONS[session_key] = (enquiry, new_state)
 
-    if new_state == State.DONE:
-        del _SESSIONS[inp.phone]
+    if new_state in (State.DONE, State.ESCALATE):
+        del _SESSIONS[session_key]
 
     used = [getattr(enquiry, 'course_res', None), getattr(enquiry, 'exam_res', None), getattr(enquiry, 'faculty_res', None)]
     used = [u for u in used if u]
