@@ -72,8 +72,9 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         canonical, res = resolve_course(clean_query)
         if canonical is not None:
             enquiry.course = canonical
-            enquiry.course_payload = res.payload
-            return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
+        enquiry.course_payload = res.payload
+        enquiry.resolve_fail_count = 0
+        return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
         if res is not None and res.band == "confirm":
             enquiry.pending_course_confirm = res.canonical
             return f"Did you mean {res.canonical}? Say yes to confirm, or tell me the correct course.", State.ENQUIRE
@@ -335,7 +336,7 @@ def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple
         return "Thank you, have a great day!", State.DONE
 
     if current_state == State.ESCALATE:
-        return "I'm connecting you to a counsellor, one moment.", State.ESCALATE
+        return "You'll receive a call back from our counsellor shortly. Thank you for calling!", State.DONE
 
     return "Sorry, something went wrong.", State.ESCALATE
 

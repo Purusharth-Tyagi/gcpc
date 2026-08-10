@@ -1,79 +1,240 @@
-<!doctype html><html><head><meta charset="utf-8"><title>College Voice Desk</title></head>
-<body style="font-family:system-ui;padding:24px;max-width:760px;margin:auto">
-<h2>🎓 College Admissions Voice Desk</h2>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarthi AI — Admissions Helpline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#182640;
+    --ink-soft:#3a4b6b;
+    --paper:#F7F5EF;
+    --card:#FFFFFF;
+    --marigold:#E4A33D;
+    --marigold-deep:#C97F1E;
+    --teal:#2F6E63;
+    --line:#E4DFD3;
+    --danger:#B0433A;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    background-color:var(--paper);background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27200%27 height=%27200%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%272%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url(%23n)%27 opacity=%270.045%27/%3E%3C/svg%3E");
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:48px 20px;
+  }
+  .shell{width:100%;max-width:560px}
+  .brand{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .brand h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:32px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .brand .mark{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(155deg,var(--marigold) 0%,var(--marigold-deep) 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;letter-spacing:0.03em;color:#fff;flex-shrink:0;
+  }
+  .tagline{color:var(--ink-soft);font-size:14.5px;margin:0 0 32px;line-height:1.5}
+  .call-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:28px;
+    box-shadow:0 1px 2px rgba(24,38,64,0.04), 0 12px 32px -16px rgba(24,38,64,0.12);
+  }
+  .controls{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+  .talk-btn{
+    position:relative;
+    width:76px;height:76px;border-radius:50%;
+    border:none;cursor:pointer;
+    background:linear-gradient(155deg,#C6534A 0%, var(--danger) 100%);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+    box-shadow:0 4px 14px -4px rgba(176,67,58,0.55);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .talk-btn svg{width:26px;height:26px;fill:#fff}
+  .talk-btn.live{
+    background:linear-gradient(155deg,#3B8B7E 0%, var(--teal) 100%);
+    box-shadow:0 4px 18px -3px rgba(47,110,99,0.6);
+    transform:scale(1.04);
+  }
+  .talk-btn:active{transform:scale(0.96)}
+  .ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--teal);opacity:0;pointer-events:none}
+  .talk-btn.live .ring{animation:pulse 1.4s ease-out infinite}
+  @keyframes pulse{
+    0%{opacity:.55;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.45)}
+  }
+  .meta{flex:1;min-width:0}
+  .status-line{font-size:14px;font-weight:500;color:var(--ink)}
+  .status-sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+  .lex-row{
+    display:flex;align-items:center;gap:8px;
+    font-size:12.5px;color:var(--ink-soft);
+    padding-top:14px;border-top:1px solid var(--line);
+  }
+  .lex-row input{accent-color:var(--teal);width:14px;height:14px}
+  .waveform{display:flex;align-items:center;gap:3px;height:18px;margin-left:auto}
+  .waveform span{
+    width:3px;border-radius:2px;background:var(--teal);
+    height:4px;opacity:0.35;
+  }
+  .talk-btn.live ~ .meta .waveform span{animation:wave 0.9s ease-in-out infinite;opacity:1}
+  .waveform span:nth-child(1){animation-delay:0s}
+  .waveform span:nth-child(2){animation-delay:.12s}
+  .waveform span:nth-child(3){animation-delay:.24s}
+  .waveform span:nth-child(4){animation-delay:.36s}
+  .waveform span:nth-child(5){animation-delay:.48s}
+  @keyframes wave{
+    0%,100%{height:4px}
+    50%{height:16px}
+  }
+  .convo{margin-top:22px;display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;padding-right:2px}
+  .convo:empty::before{
+    content:"Press and hold the mic, then speak. Sarthi listens for the whole question before replying.";
+    color:var(--ink-soft);font-size:13.5px;line-height:1.6;display:block;padding:6px 2px;
+  }
+  .bubble{max-width:82%;padding:10px 14px;border-radius:14px;font-size:14.5px;line-height:1.5}
+  .bubble.user{
+    align-self:flex-end;
+    background:var(--ink);
+    color:#fff;
+    border-bottom-right-radius:4px;
+  }
+  .bubble.agent{
+    align-self:flex-start;
+    background:#F1EEE4;
+    color:var(--ink);
+    border-bottom-left-radius:4px;
+  }
+  .bubble .who{
+    display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    opacity:.6;margin-bottom:3px;font-weight:600;
+  }
+  .foot{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brand">
+    <div class="mark">gcpc</div>
+    <h1>Sarthi AI</h1>
+  </div>
+  <p class="tagline">Voice admissions helpline — know if you're eligible before you visit.</p>
 
-<div style="margin-bottom:16px">
-  <button id="recBtn" style="font-size:18px;padding:12px 24px;background:#c0392b;color:#fff;border:none;border-radius:8px;cursor:pointer">🎤 Hold to Talk</button>
-  <label style="margin-left:16px"><input type="checkbox" id="lex" checked> lexicon (phoneme fix)</label>
+  <div class="call-card">
+    <div class="controls">
+      <button id="recBtn" class="talk-btn" aria-label="Hold to talk">
+        <span class="ring"></span>
+        <svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>
+      </button>
+      <div class="meta">
+        <div class="status-line" id="statusLine">Hold to talk</div>
+        <div class="status-sub" id="statusSub">Release when you're done speaking</div>
+      </div>
+      <div class="waveform"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="lex-row">
+      <input type="checkbox" id="lex" checked>
+      <label for="lex">Pronunciation lexicon — course &amp; name phonemes corrected</label>
+    </div>
+
+    <div class="convo" id="convo"></div>
+
+    <div class="foot">
+      <span id="latency">—</span>
+      <span>Sarthi AI · VoxForge</span>
+    </div>
+  </div>
+
+  <audio id="player" style="display:none"></audio>
 </div>
 
-<div id="status" style="color:#666;margin-bottom:12px">Ready. Press and hold the button, speak, then release.</div>
-
-<div id="conversation" style="background:#f4f4f4;padding:16px;border-radius:8px;min-height:200px;white-space:pre-wrap"></div>
-
-<audio id="player" style="width:100%;margin-top:12px"></audio>
-
 <script>
-const PHONE = "+919812345678"; // fixed demo caller id
+const PHONE = "+919812345678";
 let mediaRecorder, chunks = [];
-const statusEl = document.getElementById("status");
-const convoEl = document.getElementById("conversation");
-const recBtn = document.getElementById("recBtn");
+const btn = document.getElementById("recBtn");
+const statusLine = document.getElementById("statusLine");
+const statusSub = document.getElementById("statusSub");
+const convo = document.getElementById("convo");
 const player = document.getElementById("player");
+const latencyEl = document.getElementById("latency");
 
-function log(who, text) {
-  convoEl.textContent += `${who}: ${text}\n\n`;
-  convoEl.scrollTop = convoEl.scrollHeight;
+function addBubble(who, text){
+  const b = document.createElement("div");
+  b.className = "bubble " + (who === "You" ? "user" : "agent");
+  b.innerHTML = "<span class=\"who\">" + who + "</span>" + text;
+  convo.appendChild(b);
+  convo.scrollTop = convo.scrollHeight;
 }
 
-async function startRecording() {
+async function startRecording(){
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   mediaRecorder = new MediaRecorder(stream);
   chunks = [];
   mediaRecorder.ondataavailable = e => chunks.push(e.data);
   mediaRecorder.onstop = sendAudio;
   mediaRecorder.start();
-  statusEl.textContent = "🔴 Recording... release to send";
-  recBtn.style.background = "#27ae60";
+  btn.classList.add("live");
+  statusLine.textContent = "Listening…";
+  statusSub.textContent = "Release when you're done speaking";
 }
 
-function stopRecording() {
-  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+function stopRecording(){
+  if (mediaRecorder && mediaRecorder.state !== "inactive"){
     mediaRecorder.stop();
     mediaRecorder.stream.getTracks().forEach(t => t.stop());
   }
-  recBtn.style.background = "#c0392b";
+  btn.classList.remove("live");
 }
 
-async function sendAudio() {
-  statusEl.textContent = "⏳ Processing...";
+async function sendAudio(){
+  statusLine.textContent = "Thinking…";
+  statusSub.textContent = "Transcribing and checking eligibility";
   const blob = new Blob(chunks, { type: "audio/webm" });
   const form = new FormData();
   form.append("audio", blob, "recording.webm");
-
   const lexOn = document.getElementById("lex").checked;
-  const url = `/voice-turn?phone=${encodeURIComponent(PHONE)}&lexicon_on=${lexOn}`;
+  const url = "/voice-turn?phone=" + encodeURIComponent(PHONE) + "&lexicon_on=" + lexOn;
 
-  try {
+  try{
     const r = await fetch(url, { method: "POST", body: form });
     const d = await r.json();
-
-    if (d.heard) log("You said", d.heard);
-    log("Agent", d.reply_text);
-
-    if (d.audio_base64) {
+    if (d.heard) addBubble("You", d.heard);
+    addBubble("Sarthi", d.reply_text);
+    if (d.audio_base64){
       player.src = "data:audio/wav;base64," + d.audio_base64;
       player.play();
     }
-    statusEl.textContent = `Done (${d.latency_ms?.total ?? "?"}ms). Press and hold to talk again.`;
-  } catch (err) {
-    statusEl.textContent = "❌ Error: " + err.message;
+    latencyEl.textContent = (d.latency_ms && d.latency_ms.total ? d.latency_ms.total : "?") + " ms";
+    statusLine.textContent = "Hold to talk";
+    statusSub.textContent = "Release when you're done speaking";
+  }catch(err){
+    statusLine.textContent = "Something went wrong";
+    statusSub.textContent = err.message;
   }
 }
 
-recBtn.addEventListener("mousedown", startRecording);
-recBtn.addEventListener("mouseup", stopRecording);
-recBtn.addEventListener("touchstart", e => { e.preventDefault(); startRecording(); });
-recBtn.addEventListener("touchend", e => { e.preventDefault(); stopRecording(); });
+btn.addEventListener("mousedown", startRecording);
+btn.addEventListener("mouseup", stopRecording);
+btn.addEventListener("mouseleave", () => { if(btn.classList.contains("live")) stopRecording(); });
+btn.addEventListener("touchstart", e => { e.preventDefault(); startRecording(); });
+btn.addEventListener("touchend", e => { e.preventDefault(); stopRecording(); });
 </script>
-</body></html>
+</body>
+</html>

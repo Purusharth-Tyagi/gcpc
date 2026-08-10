@@ -263,10 +263,12 @@ def api_turn(inp: TurnIn):
     ensure_loaded()
     t0 = time.perf_counter()
 
-    if inp.phone not in _SESSIONS:
-        _SESSIONS[inp.phone] = (Enquiry(phone=inp.phone), State.GREET)
+    session_key = inp.phone if inp.phone and inp.phone.strip() else "default"
 
-    enquiry, state = _SESSIONS[inp.phone]
+    if session_key not in _SESSIONS:
+        _SESSIONS[session_key] = (Enquiry(phone=session_key), State.GREET)
+
+    enquiry, state = _SESSIONS[session_key]
 
     t_route_start = time.perf_counter()
     reply, new_state = handle_turn(enquiry, state, inp.text)
@@ -274,8 +276,10 @@ def api_turn(inp: TurnIn):
 
     _SESSIONS[inp.phone] = (enquiry, new_state)
 
+    _SESSIONS[session_key] = (enquiry, new_state)
+
     if new_state == State.DONE:
-        del _SESSIONS[inp.phone]
+        del _SESSIONS[session_key]
 
     used = []
     course_res_json = None
