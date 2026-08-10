@@ -46,6 +46,18 @@ def handle_identify(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
 from agent.resolve_helpers import resolve_course, resolve_exam
 
 
+def _exam_shortcut(text: str) -> str | None:
+    """Catch common ASR mishearings for exam names before resolver/LLM."""
+    t = text.lower().replace(" ", "").replace(".", "")
+    if any(x in t for x in ["jee", "jmeans", "jemeans", "pointentrance", "joinentrance"]):
+        return "JEE Main"
+    if any(x in t for x in ["cuet", "quiet", "cueit"]):
+        return "CUET"
+    if "neet" in t:
+        return "NEET"
+    return None
+
+
 def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
     """Fill course, then exam, then score — one slot at a time."""
 
@@ -72,9 +84,9 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
         canonical, res = resolve_course(clean_query)
         if canonical is not None:
             enquiry.course = canonical
-        enquiry.course_payload = res.payload
-        enquiry.resolve_fail_count = 0
-        return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
+            enquiry.course_payload = res.payload
+            enquiry.resolve_fail_count = 0
+            return f"Got it — {canonical}. Which entrance exam did you take?", State.ENQUIRE
         if res is not None and res.band == "confirm":
             enquiry.pending_course_confirm = res.canonical
             return f"Did you mean {res.canonical}? Say yes to confirm, or tell me the correct course.", State.ENQUIRE
@@ -87,6 +99,10 @@ def handle_enquire(enquiry: Enquiry, user_said: str) -> tuple[str, State]:
     if enquiry.exam is None:
         if user_said.strip() == "":
             return "Which entrance exam did you take?", State.ENQUIRE
+        shortcut = _exam_shortcut(user_said)
+        if shortcut:
+            enquiry.exam = shortcut
+            return f"And what was your {shortcut} score?", State.ENQUIRE
         clean_query = extract_query(user_said, "exam")
         if clean_query == "":
             enquiry.resolve_fail_count += 1
