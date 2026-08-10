@@ -267,7 +267,7 @@ app.post("/speak", async (req, res) => {
 });
 
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`demo console  -> http://localhost:${PORT}`);
   console.log(`turn log      -> ${LOG_FILE}`);
   scheduleNextTurn();

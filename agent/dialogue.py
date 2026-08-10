@@ -314,6 +314,13 @@ def handle_turn(enquiry: Enquiry, current_state: State, user_said: str) -> tuple
         if check_wants_human(user_said):
             return "Sure, connecting you to a counsellor now.", State.ESCALATE
 
+    
+    # Smart bypass: if caller jumps straight to business, skip greeting/identify
+    if current_state in (State.GREET, State.IDENTIFY):
+        keywords = {"jee", "cuet", "percentile", "score", "course", "btech", "cse", "ai", "ml", "b.tech", "admission"}
+        if any(w in user_said.lower() for w in keywords):
+            current_state = State.ENQUIRE
+
     if current_state == State.GREET:
         return handle_greet(enquiry)
 

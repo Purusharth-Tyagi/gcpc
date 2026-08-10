@@ -279,28 +279,8 @@ def api_turn(inp: TurnIn):
     _SESSIONS[session_key] = (enquiry, new_state)
 
     if new_state == State.DONE:
-        del _SESSIONS[session_key]
+        del _SESSIONS[inp.phone]
 
-    used = []
-    course_res_json = None
-    if enquiry.course_payload:
-        course_res_json = {
-            "canonical": enquiry.course,
-            "band": "accept",
-            "score": 1.0,
-            "alternates": [],
-            "payload": enquiry.course_payload,
-        }
-
-    exam_res_json = None
-    if enquiry.exam:
-        exam_res_json = {
-            "canonical": enquiry.exam,
-            "band": "accept",
-            "score": 1.0,
-            "alternates": [],
-            "payload": {},
-        }
     used = [getattr(enquiry, 'course_res', None), getattr(enquiry, 'exam_res', None), getattr(enquiry, 'faculty_res', None)]
     used = [u for u in used if u]
 
@@ -352,7 +332,7 @@ async def api_voice_turn(phone: str = "+919812345678", lexicon_on: bool = True, 
     reply, new_state = handle_turn(enquiry, state, heard_text)
     _SESSIONS[phone] = (enquiry, new_state)
 
-    if new_state == State.DONE:
+    if new_state in (State.DONE, State.ESCALATE):
         del _SESSIONS[phone]
 
     used = []
