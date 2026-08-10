@@ -1,2 +1,1 @@
 # gcpc
-yug gandu
