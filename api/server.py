@@ -22,6 +22,7 @@ import time
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from fastapi.responses import FileResponse
 from fastapi import FastAPI, HTTPException           # noqa: E402
 from fastapi.responses import Response                # noqa: E402
 from fastapi.middleware.cors import CORSMiddleware   # noqa: E402
@@ -303,9 +304,9 @@ def api_turn(inp: TurnIn):
         "speak_lexicon_off": _inject(reply, used, False),
         "speak": spoken_text,
         "audio_base64": audio_b64,
-        "resolutions": {"course": course_res_json, "exam": exam_res_json, "best": None, "best_kind": None},
-        "intent": {"name": state.value, "confidence": 1.0},
-        "eligibility": {"verdict": "unknown", "cutoff": None},
+        
+        
+        
         "memory": [],
         "latency_ms": {
             "route": round((t_route_end - t_route_start) * 1000, 2),
@@ -342,7 +343,7 @@ async def api_voice_turn(phone: str = "+919812345678", lexicon_on: bool = True, 
 
     return {
         "heard": heard_text,
-        "state": new_state.value,
+        
         "reply_text": reply,
         "speak": spoken_text,
         "audio_base64": audio_b64,
@@ -356,3 +357,6 @@ if os.path.isdir(UI_DIR):
     print(f"[ui] serving {UI_DIR} at /")
 else:
     print(f"[ui] no {UI_DIR} folder — API only")
+@app.get("/")
+def ui():
+    return FileResponse("ui/index.html")
